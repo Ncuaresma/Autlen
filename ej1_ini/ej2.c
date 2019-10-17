@@ -48,7 +48,7 @@ void main(int argc, char **argv){
   i = 0;
   while(letra != '\0'){
     flag=0;
-    //Comprobar la letra cnfuncioncita
+    //Comprobar la letra con funcioncita maravillosa
     for(l=0; l<nestados; l++){
       if(estadov[l] == 1){
         for(k=0; k<ntrans; k++){
@@ -60,7 +60,8 @@ void main(int argc, char **argv){
     }
     for (l=0; l<nestados; l++){
       estadov[l]=estadon[l];
-      if(estadon[l]=! 0){
+      printf("%d hola", estadon[l]);
+      if(estadon[l] =! 0){
         flag = 1;
       }
       estadon[l]=0;
@@ -76,6 +77,6 @@ void main(int argc, char **argv){
     printf("Has alcanzado el estado final!!!!\n");
   }
   else{
-    printf("Palabra no aceptada, no llega al estado final.\n");
+    printf("Palabra no aceptada.\n");
   }
 }
