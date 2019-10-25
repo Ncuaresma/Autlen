@@ -1,5 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
+
+int* next_state(int ntrans, int** matriz, int l, int nestados, char letra){
+  int* estadon = (int*)malloc(nestados*sizeof(int));
+  int k;
+  for(k=0; k<ntrans; k++){
+    printf("pos: %d\n", matriz[k][0]);
+    printf("letra: %d\n", matriz[k][1]);
+    printf("letra: %d\n", letra);
+    printf("\n");
+    if(l == matriz[k][0] && toascii(letra) == matriz[k][1]){
+      printf("je pasaa\n");
+      estadon[matriz[k][2]] = 1;
+    }
+  }
+  return estadon;
+}
 
 void main(int argc, char **argv){
   if(argc!=3){
@@ -50,18 +67,16 @@ void main(int argc, char **argv){
     flag=0;
     //Comprobar la letra con funcioncita maravillosa
     for(l=0; l<nestados; l++){
+      printf("estadov: %d\n", estadov[l]);
       if(estadov[l] == 1){
-        for(k=0; k<ntrans; k++){
-          if(l == matriz[k][0] && letra == matriz[k][1]){
-            estadon[matriz[k][2]] = 1;
-          }
-        }
+        /*Buscamos a que estado pasamos y con que transicion*/
+        estadon = next_state(ntrans, matriz, l, nestados, letra);
       }
     }
     for (l=0; l<nestados; l++){
       estadov[l]=estadon[l];
-      printf("%d hola", estadon[l]);
-      if(estadon[l] =! 0){
+      printf("%d %d hola\n", estadon[l], l);
+      if(estadon[l] != 0){
         flag = 1;
       }
       estadon[l]=0;
@@ -73,6 +88,7 @@ void main(int argc, char **argv){
       return;
     }
   }
+  printf("%d\n", estadov[efin]);
   if(estadov[efin]==1){
     printf("Has alcanzado el estado final!!!!\n");
   }
