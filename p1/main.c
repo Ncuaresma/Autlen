@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "afnd.h"
-//#include "transforma.h"
+#include "transforma.h"
 
 int main(int argc, char ** argv)
 {
