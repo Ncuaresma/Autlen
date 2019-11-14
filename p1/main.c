@@ -13,7 +13,7 @@ int main(int argc, char ** argv)
 
 	p_afnd= AFNDNuevo("af11", 6, 3);
 
-	AFNDInsertaSimbolo(p_afnd,"+");
+	AFNDInsertaSimbolo(p_afnd,"+");z
 	AFNDInsertaSimbolo(p_afnd, "0");
 	AFNDInsertaSimbolo(p_afnd,".");
 
@@ -32,14 +32,20 @@ int main(int argc, char ** argv)
 	AFNDInsertaTransicion(p_afnd, "q3", "0", "q3");
 	AFNDInsertaTransicion(p_afnd, "q4", ".", "q3");
 
+	//son las de transicion lambda
 	AFNDInsertaLTransicion(p_afnd, "q0", "q1");
 	AFNDInsertaLTransicion(p_afnd, "q3", "q5");
 	AFNDCierraLTransicion(p_afnd);
-
-	//afd  = AFNDTransforma(p_afnd);
-	//AFNDImprime(stdout,afd);
-	//AFNDADot(afd);
+	//Creando imagen del automata inicial
 	AFNDADot(p_afnd);
+
+	afd  = AFNDTransforma(p_afnd);
+
+	//Imprimiendo el automata final
+	AFNDImprime(stdout,afd);
+	//Creando la imagen del automata final
+	AFNDADot(afd);
+
 
 	//AFNDElimina(afd);
 	AFNDElimina(p_afnd);
