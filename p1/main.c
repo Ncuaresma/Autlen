@@ -13,7 +13,7 @@ int main(int argc, char ** argv)
 
 	p_afnd= AFNDNuevo("af11", 6, 3);
 
-	AFNDInsertaSimbolo(p_afnd,"+");z
+	AFNDInsertaSimbolo(p_afnd,"+");
 	AFNDInsertaSimbolo(p_afnd, "0");
 	AFNDInsertaSimbolo(p_afnd,".");
 
@@ -39,6 +39,7 @@ int main(int argc, char ** argv)
 	//Creando imagen del automata inicial
 	AFNDADot(p_afnd);
 
+	//Transformando el automata
 	afd  = AFNDTransforma(p_afnd);
 
 	//Imprimiendo el automata final

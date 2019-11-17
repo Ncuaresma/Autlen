@@ -3,10 +3,10 @@
 
 #include <stdio.h>
 
-#define INICIAL	0
-#define FINAL	1
-#define INICIAL_Y_FINAL	2
-#define NORMAL 3
+  #define INICIAL	0
+  #define FINAL	1
+  #define INICIAL_Y_FINAL	2
+  #define NORMAL 3
 
 typedef struct _AFND AFND;
 
