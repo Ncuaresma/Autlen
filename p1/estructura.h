@@ -11,8 +11,30 @@
 #define INICIAL_Y_FINAL 2
 #define NORMAL 3
 
+/*typedef struct _estructura{
+  char** simbolos; //alfabeti
+  char** estados_nombres;
+  estado* estados;
+  char* estado_inicio;
+  char* estado_fin;
+  int num_estados;
+  int num_simbolos;
+}estructura;*/
 typedef struct _estructura estructura;
-estado* crear_estructura(char* nombre, int tipo);
+estructura* crear_estructura(int num_estados, int num_simbolos);
+char** get_simbolos(estructura* estru);
+char* get_simbolo_pos(estructura* estru, int pos);
+void add_simbolo(estructura* estru, char* new_simbolo);
+char** get_estados_nombres(estructura* estru);
+estado get_estado_bynombre(estructura* estru, char* estado_nombre);
+char* get_estado_pos(estructura* estru, int pos);
+void add_estado(estructura* estru, char* new_estado);
+char* get_estado_inicio(estructura* estru);
+void cambiar_estado_inicio(estructura* estru, char* new_estado_inicio);
+char* get_estado_fin(estructura* estru);
+void cambiar_estado_fin(estructura* estru, char* new_estado_fin);
+int get_num_simbolos(estado* estado);
+int get_num_estados(estado* estado);
 void eliminar_estructura(estado* est);
 
 

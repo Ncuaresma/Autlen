@@ -19,13 +19,15 @@ AFND * AFNDTransforma(AFND * afnd){
   estructura* estru = crear_estructura(num_estados, num_simbolos);
   //inicializa los estados y crea el array de todos los estados existentes
   obtener_estados(num_estados, num_simbolos, afnd);
-  //obtiene el array de simbolos existentes
+  //crea el array de simbolos existentes
   obtener_simbolos(num_simbolos, afnd);
   /*Transformar a un autómata determinista*/
   //Ver de cada estado a cual de los siguientes va y con que símbolo
   for(int i = 0; i < num_estados; i++){
     estados_contiguos(i, num_estados, afnd);
   }
+
+  //para terminar hay que crear un un automata nuevo con todo
 }
 
 /*Saca los estados del autómata y los introduce en la estductura creada
