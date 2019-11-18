@@ -16,7 +16,7 @@
   char** estados_nombres;
   estado* estados;
   char* estado_inicio;
-  char* estado_fin;
+  char** estado_fin;
   int num_estados;
   int num_simbolos;
 }estructura;*/
@@ -31,11 +31,11 @@ char* get_estado_pos(estructura* estru, int pos);
 void add_estado(estructura* estru, char* new_estado);
 char* get_estado_inicio(estructura* estru);
 void cambiar_estado_inicio(estructura* estru, char* new_estado_inicio);
-char* get_estado_fin(estructura* estru);
-void cambiar_estado_fin(estructura* estru, char* new_estado_fin);
+char* get_estados_fin(estructura* estru);
 int get_num_simbolos(estado* estado);
 int get_num_estados(estado* estado);
 void eliminar_estructura(estado* est);
+//hacer los gets
 
 
 #endif

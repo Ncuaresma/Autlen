@@ -18,21 +18,22 @@ AFND * AFNDTransforma(AFND * afnd){
 
   estructura* estru = crear_estructura(num_estados, num_simbolos);
   //inicializa los estados y crea el array de todos los estados existentes
-  obtener_estados(num_estados, num_simbolos, afnd);
+  introdudir_estados(num_estados, num_simbolos, afnd, estru);
   //crea el array de simbolos existentes
-  obtener_simbolos(num_simbolos, afnd);
+  introdudir_simbolos(num_simbolos, afnd);
   /*Transformar a un autómata determinista*/
   //Ver de cada estado a cual de los siguientes va y con que símbolo
   for(int i = 0; i < num_estados; i++){
+    //crea la matriz de transiciones de estados
     estados_contiguos(i, num_estados, afnd);
   }
-
   //para terminar hay que crear un un automata nuevo con todo
+  actualizar_automata(estru);
 }
 
 /*Saca los estados del autómata y los introduce en la estductura creada
 Obteniendo tambien el estado inicial y el final*/
-void obtener_estados(int num_estados, int num_simbolos, AFND * afnd){
+void introdudir_estados(int num_estados, int num_simbolos, AFND * afnd){
   char* nombre_est;
   int tipo_est;
   //Obtener el estado INICIAL
@@ -61,10 +62,10 @@ void obtener_estados(int num_estados, int num_simbolos, AFND * afnd){
 
 /*Saca mediante las funciones los símbolos admitidos por el autómata
  y lo introduce en la estructura*/
-void obtener_simbolos(int num_simbolos, AFND * afnd){
+void introdudir_simbolos(int num_simbolos, AFND * afnd){
   for (int i = 0; i < num_simbolos; i++){
     nombre_sim = AFNDSimboloEn(afnd, i);
-    strcpy(estru->simbolos[i], nombre_sim);
+    strcpy(estru->simbolos[i], nombre_sim); //Funcion set
   }
 }
 
