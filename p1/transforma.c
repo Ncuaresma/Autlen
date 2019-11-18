@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include "estructura.h"
-#include "estado.h"
+#include "transforma.h"
 
 AFND * AFNDTransforma(AFND * afnd){
 
@@ -18,22 +16,22 @@ AFND * AFNDTransforma(AFND * afnd){
 
   estructura* estru = crear_estructura(num_estados, num_simbolos);
   //inicializa los estados y crea el array de todos los estados existentes
-  introdudir_estados(num_estados, num_simbolos, afnd, estru);
+  introducir_estados(num_estados, num_simbolos, afnd, estru);
   //crea el array de simbolos existentes
-  introdudir_simbolos(num_simbolos, afnd);
+  introducir_simbolos(num_simbolos, afnd, estru);
   /*Transformar a un autómata determinista*/
   //Ver de cada estado a cual de los siguientes va y con que símbolo
   for(int i = 0; i < num_estados; i++){
     //crea la matriz de transiciones de estados
-    estados_contiguos(i, num_estados, afnd);
+    estados_contiguos(i, num_estados, num_simbolos, afnd);
   }
   //para terminar hay que crear un un automata nuevo con todo
-  actualizar_automata(estru);
+  //actualizar_automata(estru);
 }
 
 /*Saca los estados del autómata y los introduce en la estductura creada
 Obteniendo tambien el estado inicial y el final*/
-void introdudir_estados(int num_estados, int num_simbolos, AFND * afnd){
+void introducir_estados(int num_estados, int num_simbolos, AFND * afnd, estructura* estru){
   char* nombre_est;
   int tipo_est;
   //Obtener el estado INICIAL
@@ -62,7 +60,8 @@ void introdudir_estados(int num_estados, int num_simbolos, AFND * afnd){
 
 /*Saca mediante las funciones los símbolos admitidos por el autómata
  y lo introduce en la estructura*/
-void introdudir_simbolos(int num_simbolos, AFND * afnd){
+void introducir_simbolos(int num_simbolos, AFND * afnd, estructura* estru){
+  char* nombre_sim;
   for (int i = 0; i < num_simbolos; i++){
     nombre_sim = AFNDSimboloEn(afnd, i);
     strcpy(estru->simbolos[i], nombre_sim); //Funcion set
@@ -82,7 +81,7 @@ void estados_contiguos(int estado, int num_estados, int num_simbolos, AFND * afn
 
 //introducir en el estado las transiciones con sus simbolos y estados siguientes
 //cuidado no he mirado que desde el propio estado tenfa transicion lambda a alguno...xq no sabria como meterlo en el array
-void buscar_simbolo(AFND * afnd, int estado, int estado2, int num_simbolos, int num_estados){
+void buscar_simbolo(AFND * afnd, estado* estado, estado* estado2, int num_simbolos, int num_estados){
   for(int i = 0; i < num_simbolos; i++){
     if(AFNDTransicionIndicesEstadoiSimboloEstadof(afnd, estado, i, estado2)){
       //ponemos un 1 en el estado al que va con el simbolo indicado

@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdio.h>
+#include "estado.h"
 
 #define INICIAL 0
 #define FINAL   1
@@ -14,7 +15,7 @@
 /*typedef struct _estructura{
   char** simbolos; //alfabeti
   char** estados_nombres;
-  estado* estados;
+  estado** estados;
   char* estado_inicio;
   char** estado_fin;
   int num_estados;
@@ -26,16 +27,16 @@ char** get_simbolos(estructura* estru);
 char* get_simbolo_pos(estructura* estru, int pos);
 void add_simbolo(estructura* estru, char* new_simbolo);
 char** get_estados_nombres(estructura* estru);
-estado get_estado_bynombre(estructura* estru, char* estado_nombre);
-char* get_estado_pos(estructura* estru, int pos);
-void add_estado(estructura* estru, char* new_estado);
+estado* get_estado_bynombre(estructura* estru, char* estado_nombre);
+estado* get_estado_pos(estructura* estru, int pos);
+void add_estado(estructura* estru, estado* new_estado);
 char* get_estado_inicio(estructura* estru);
 void cambiar_estado_inicio(estructura* estru, char* new_estado_inicio);
-char* get_estados_fin(estructura* estru);
-int get_num_simbolos(estado* estado);
-int get_num_estados(estado* estado);
-void eliminar_estructura(estado* est);
-//hacer los gets
+char** get_estados_fin(estructura* estru);
+int get_num_simbolos(estructura* estru);
+int get_num_estados(estructura* estru);
+void eliminar_estructura(estructura* estru);
+//hacer los sets
 
 
 #endif

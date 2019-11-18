@@ -10,39 +10,42 @@ typedef struct _estado{
 }estado;
 
 //inicializando valores del estado
-estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados){
-  if (!nombre) return null;
-  if (tipo > 3 || tipo < 0) return null;
-  if (num_simbolos < 0 || num_estados < 0) return null;
-
-  estado* state = malloc(sizeof(estado));
+estado *ini_estado(int num_estados, int num_simbolos){
+  if (num_simbolos < 0 || num_estados < 0) return NULL;
+  estado* state = (estado*)malloc(sizeof(estado));
   if (!state) return NULL;
-
-  state->num_estados = num_estados;
-  state->num_simbolos = num_simbolos;
-  state->tipo = tipo;
-  state->nombre = (char*)malloc((strlen(nombre))*(sizeof(char)));
+  state->nombre = (char*)malloc((sizeof(char)));
   if(!state->nombre){
     free(state);
-    return null;
+    return NULL;
   }
-  strcpy(state->nombre, nombre);
-
-  int** state->transiciones = (int **)malloc(num_estados*sizeof(int*));
+  state->transiciones = (int **)malloc(num_estados*sizeof(int*));
   if (!state->transiciones){
     free(state->nombre);
     free(state);
     return NULL;
   }
-  for (i=0;i<num_estados;i++){
+  for (int i=0;i<num_estados;i++){
 		state->transiciones[i] = (int*)malloc(num_simbolos*sizeof(int));
     if (!state->transiciones[i]){
-      free(transiciones);
-      free(nombre);
+      free(state->transiciones);
+      free(state->nombre);
       free(state);
       return NULL;
     }
   }
+  return state;
+}
+estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados){
+  if (!nombre) return NULL;
+  if (tipo > 3 || tipo < 0) return NULL;
+  if (num_simbolos < 0 || num_estados < 0) return NULL;
+
+  estado* state = ini_estado(num_estados, num_simbolos);
+  state->num_estados = num_estados;
+  state->num_simbolos = num_simbolos;
+  state->tipo = tipo;
+  strcpy(state->nombre, nombre);
   return state;
 }
 
@@ -62,20 +65,9 @@ int** get_transciones(estado* estado){
 }
 
 int* get_transicion_simbolo(estado* estado, int pos_estado){
-  if(!estado) return null;
+  if(!estado) return NULL;
   return estado->transiciones[pos_estado];
 }
-
-int get_num_simbolos(estado* estado){
-  if(!estado) return -1;
-  return estado->num_simbolos;
-}
-
-int get_num_estados(estado* estado){
-  if(!estado) return -1;
-  return estado->num_estados;
-}
-
 
 void annadir_trans(estado* estado, int estado_pos, int simbolo){
     if(!estado) return;
