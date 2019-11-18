@@ -19,6 +19,7 @@ estado *ini_estado(int num_estados, int num_simbolos){
     free(state);
     return NULL;
   }
+  state->nombre = NULL;
   state->transiciones = (int **)malloc(num_estados*sizeof(int*));
   if (!state->transiciones){
     free(state->nombre);
