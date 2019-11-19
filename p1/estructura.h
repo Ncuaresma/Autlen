@@ -20,6 +20,7 @@
   char** estado_fin;
   int num_estados;
   int num_simbolos;
+  int num_finales;
 }estructura;*/
 typedef struct _estructura estructura;
 estructura* crear_estructura(int num_estados, int num_simbolos);

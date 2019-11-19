@@ -9,6 +9,7 @@ typedef struct _estructura{
   char** estados_fin;
   int num_estados;
   int num_simbolos;
+  int num_finales;
 }estructura;
 
 estructura* crear_estructura(int num_estados, int num_simbolos){

@@ -20,11 +20,7 @@ AFND * AFNDTransforma(AFND * afnd){
   //crea el array de simbolos existentes
   introducir_simbolos(num_simbolos, afnd, estru);
   /*Transformar a un autómata determinista*/
-  //Ver de cada estado a cual de los siguientes va y con que símbolo
-  for(int i = 0; i < num_estados; i++){
-    //crea la matriz de transiciones de estados
-    estados_contiguos(i, num_estados, num_simbolos, afnd);
-  }
+
   //para terminar hay que crear un un automata nuevo con todo
   //actualizar_automata(estru);
 }
@@ -34,15 +30,16 @@ Obteniendo tambien el estado inicial y el final*/
 void introducir_estados(int num_estados, int num_simbolos, AFND * afnd, estructura* estru){
   char* nombre_est;
   int tipo_est;
+  int n_finales = 0;
   //Obtener el estado INICIAL
   int ini = AFNDIndiceEstadoInicial(afnd);
   nombre_est = AFNDNombreEstadoEn(afnd, ini);
   strcpy(get_estado_inicio(estru), nombre_est);
   //Obtener el estado FINAL
   //no se por que pone primer, lo mismo es por que hay mas, en este caso usamos el if del bucle
-  int fin = AFNDIndicePrimerEstadoFinal(afnd);
+  /*int fin = AFNDIndicePrimerEstadoFinal(afnd);
   nombre_est = AFNDNombreEstadoEn(afnd, fin);
-  strcpy(get_estados_fin(estru)[0], nombre_est);
+  strcpy(get_estados_fin(estru)[0], nombre_est);*/
 
   for (int i = 0; i < num_estados; i++){
     nombre_est = AFNDNombreEstadoEn(afnd, i);
@@ -50,12 +47,26 @@ void introducir_estados(int num_estados, int num_simbolos, AFND * afnd, estructu
     /*if (tipo_est == INICIAL){
       strcpy(estru->estado_inicio, nombre_est);
     }
-    else if (tipo_est == FINAL){
-      strcpy(estru->estado_fin, nombre_est);
-    }*/
-    strcpy(estru->estados[i], nombre_est);
+    else*/
+    //Introducimos en la estructura todos los estados finales existentes
+    if (tipo_est == FINAL){
+      strcpy(get_estados_fin(estru)[n_finales], nombre_est);
+      n_finales++;
+    }
     estado* est = crear_estado(nombre_est, tipo_est, num_simbolos, num_estados);
+    //Ver de cada estado a cual de los siguientes va y con que símbolo
+    //crea la matriz de transiciones de estados
+    estados_contiguos(est, num_estados, num_simbolos, afnd); //---> no se si hacerlo antes o despues de añadir el estado
+    //Añadimos el nuevo estado a la estructura.
+    add_estado(estru, est);
   }
+  //ver que el estado inicial tenga lambda y añadimos a la matriz el nuevo estado
+  //Recorrer la matriz transicion y generar los estados nuevos combinados que hay
+  //meterlos en la matriz estos estados nuevos.
+  //y hacer esto hasta que todos los estados nuevos que se vayan generando esten creados(bucle de lo que ya hay)
+  //desde el nuevo estado inicial ir recorriendo la matriz y hacer transiciones indicadas a estados indicados
+  //si desde un estado vas a dos vas metiendo en una pila los estado que has descubiertop y luego los exploras ((EDYL))jeje
+  //se genera finalmee el automata nuevo
 }
 
 /*Saca mediante las funciones los símbolos admitidos por el autómata
@@ -64,16 +75,16 @@ void introducir_simbolos(int num_simbolos, AFND * afnd, estructura* estru){
   char* nombre_sim;
   for (int i = 0; i < num_simbolos; i++){
     nombre_sim = AFNDSimboloEn(afnd, i);
-    strcpy(estru->simbolos[i], nombre_sim); //Funcion set
+    add_simbolo(estru, nombre_sim);
   }
 }
 
 /**/
-void estados_contiguos(int estado, int num_estados, int num_simbolos, AFND * afnd){
+void estados_contiguos(estado* estado, int num_estados, int num_simbolos, AFND * afnd){
   //metemos en casa struct de cada estado sus transiciones, dependiendo del simbolo
   for (int i = 0; i < num_estados; i++){
     //en caso de que exista transición
-    if (AFNDLTransicionIJ(afnd, estado, i)){
+    if (AFNDLTransicionIJ(afnd, get_nombre(estado), i)){
       buscar_simbolo(afnd, estado, i, num_simbolos, num_estados);
     }
   }
@@ -81,15 +92,16 @@ void estados_contiguos(int estado, int num_estados, int num_simbolos, AFND * afn
 
 //introducir en el estado las transiciones con sus simbolos y estados siguientes
 //cuidado no he mirado que desde el propio estado tenfa transicion lambda a alguno...xq no sabria como meterlo en el array
-void buscar_simbolo(AFND * afnd, estado* estado, estado* estado2, int num_simbolos, int num_estados){
+void buscar_simbolo(AFND * afnd, estado* estado, int n_estado2, int num_simbolos, int num_estados){
   for(int i = 0; i < num_simbolos; i++){
     if(AFNDTransicionIndicesEstadoiSimboloEstadof(afnd, estado, i, estado2)){
-      //ponemos un 1 en el estado al que va con el simbolo indicado
-      estado->transiciones[i][estado2]=1;
+      //añadimos la transicion indicada.
+      annadir_trans(estado, n_estado2, i);
       //en caso de que del segundo estado vaya a otro con lambda este tambien se incluiria
+      //no cubrimos el caso de que se vaya a dos encadenados con lambda
       for(int j = 0; j < num_estados; j++){
         if(AFNDCierreLTransicionIJ(afnd, estado2, j)){
-          estado->transiciones[i][j]=1;
+          annadir_trans(estado, j, i);
         }
       }
     }

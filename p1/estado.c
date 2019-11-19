@@ -64,9 +64,9 @@ int** get_transciones(estado* estado){
   return estado->transiciones;
 }
 
-int* get_transicion_simbolo(estado* estado, int pos_estado){
+int* get_transicion_simbolo(estado* estado, int pos_simbolo){
   if(!estado) return NULL;
-  return estado->transiciones[pos_estado];
+  return estado->transiciones[pos_simbolo];
 }
 
 void annadir_trans(estado* estado, int estado_pos, int simbolo){
