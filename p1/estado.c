@@ -3,6 +3,7 @@
 //estructura para estado
 typedef struct _estado{
   char* nombre;
+  int id;
   int tipo; //puede ser INICIAL, FINAL, INICIAL_Y_FINAL O NORMAL
   int** transiciones; // array de arrasys con los estados a los quue se puede ir y con que simbolos
   int num_simbolos;
@@ -36,12 +37,14 @@ estado *ini_estado(int num_estados, int num_simbolos){
   }
   return state;
 }
-estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados){
+
+estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados, int id){
   if (!nombre) return NULL;
   if (tipo > 3 || tipo < 0) return NULL;
   if (num_simbolos < 0 || num_estados < 0) return NULL;
 
   estado* state = ini_estado(num_estados, num_simbolos);
+  state->id = id;
   state->num_estados = num_estados;
   state->num_simbolos = num_simbolos;
   state->tipo = tipo;
@@ -52,6 +55,11 @@ estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados){
 char* get_nombre(estado* estado){
   if(!estado) return NULL;
   return estado->nombre;
+}
+
+int get_id(estado* estado){
+  if(!estado) return -1;
+  return estado->id;
 }
 
 int get_tipo(estado* estado){

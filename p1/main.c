@@ -42,10 +42,10 @@ int main(int argc, char ** argv)
 	//Transformando el automata
 	afd  = AFNDTransforma(p_afnd);
 
-	//Imprimiendo el automata final
-	AFNDImprime(stdout,afd);
-	//Creando la imagen del automata final
-	AFNDADot(afd);
+	// //Imprimiendo el automata final
+	// AFNDImprime(stdout,afd);
+	// //Creando la imagen del automata final
+	// AFNDADot(afd);
 
 
 	//AFNDElimina(afd);

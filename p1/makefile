@@ -1,20 +1,22 @@
 CC = gcc
-CFLAGS = -g
+CFLAGS = -g -Wall
 OBJ = *.o
 
 all: main
 
-main: main.o transforma.o afnd.o
-	$(CC) $(CFLAGS) -o main main.o transforma.o afnd.o
+eje: main.o transforma.o afnd.o estado.o estructura.o
+	$(CC) $(CFLAGS) -o main main.o transforma.o afnd.o estado.o estructura.o
+
+main.o:
 
 transforma.o: transforma.c transforma.h estado.o estructura.o
 	$(CC) $(CFLAGS) -c transforma.c  -o estado.o estructura.o
 
-estado.o: estado.c estado.h estructura.o
-	$(CC) $(CFLAGS) -c estado.c -o estado.o
+estado.o: estado.c estado.h
+	$(CC) $(CFLAGS) -c estado.c
 
-estructura.o: estructura.c estructura.h
-	$(CC) $(CFLAGS) -c estructura.c
+estructura.o: estructura.c estructura.h estado.o
+	$(CC) $(CFLAGS) -c estructura.c -o estado.o
 
 afnd.o: afnd.c afnd.h
 	$(CC) $(CFLAGS) -c afnd.c
