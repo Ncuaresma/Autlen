@@ -1,24 +1,25 @@
 #include "estructura.h"
 
-// estructura general
-typedef struct _estructura{
-  char** simbolos; //alfabeti
-  char** estados_nombres;
+/* estructura general */
+struct _estructura{
+  char** simbolos; /*alfabeti*/
+  /*char** estados_nombres;*/
   estado** estados;
   char* estado_inicio;
   char** estados_fin;
   int num_estados;
   int num_simbolos;
   int num_finales;
-}estructura;
+};
 
-estructura* crear_estructura(int num_estados, int num_simbolos){
-  if (num_estados < 0 || num_simbolos < 0) return NULL;
-
+estructura* crear_estructura(int num_simbolos){
+  int i = 0;
   estructura* estru = (estructura*)malloc(sizeof(estructura));
+
+  if (num_simbolos < 0) return NULL;
   if (!estru) return NULL;
 
-  estru->num_estados = num_estados;
+  estru->num_estados = 0;
   estru->num_simbolos = num_simbolos;
 
   estru->simbolos = (char**)malloc(num_simbolos*sizeof(char*));
@@ -26,8 +27,8 @@ estructura* crear_estructura(int num_estados, int num_simbolos){
     free(estru);
     return NULL;
   }
-  for (int i = 0; i < num_simbolos; i++){
-    estru->simbolos[i] = (char*)malloc(100*sizeof(char));
+  for (i = 0; i < num_simbolos; i++){
+    estru->simbolos[i] = (char*)malloc(sizeof(char)*MAX_CHAR);
     if (! estru->simbolos[i]){
       free(estru->simbolos);
       free(estru);
@@ -35,94 +36,44 @@ estructura* crear_estructura(int num_estados, int num_simbolos){
     }
   }
 
-  estru->estados_nombres = (char**)malloc(num_estados*sizeof(char*));
-  if (! estru->estados_nombres){
-    for(int i = 0; i < num_simbolos; i++){
-  		free(estru->simbolos[i]);
-  	}
-    free(estru->simbolos);
-    free(estru);
-    return NULL;
-  }
-  for (int i = 0; i < num_estados; i++){
-    estru->estados_nombres[i] = (char*)malloc(100*sizeof(char));
-    if (! estru->estados_nombres[i]){
-      free(estru->estados_nombres);
-      free(estru->simbolos);
-      for(int i = 0; i < num_simbolos; i++){
-    		free(estru->simbolos[i]);
-    	}
-      free(estru);
-      return NULL;
-    }
-  }
-  estru->estados = (estado**)malloc(num_estados*sizeof(estado*));
+  estru->estados = (estado**)malloc(sizeof(estado*));
   if (! estru->estados){
-    for(int i = 0; i < num_estados; i++){
-      free(estru->estados_nombres[i]);
-    }
-    free(estru->estados_nombres);
     free(estru->simbolos);
-    for(int i = 0; i < num_simbolos; i++){
+    for (i = 0; i < num_simbolos; i++){
       free(estru->simbolos[i]);
     }
     free(estru);
     return NULL;
   }
 
-  for (int i = 0; i < num_estados; i++){
-    estru->estados[i] = ini_estado(num_estados, num_simbolos);
-    if (! estru->estados[i]){
-      free(estru->estados);
-      for(int i = 0; i < num_estados; i++){
-        free(estru->estados_nombres[i]);
-      }
-      free(estru->estados_nombres);
-      free(estru->simbolos);
-      for(int i = 0; i < num_simbolos; i++){
-        free(estru->simbolos[i]);
-      }
-      free(estru);
-      return NULL;
-    }
-  }
-
-  estru->estado_inicio=(char*)malloc(100*sizeof(char));
+  estru->estado_inicio=(char*)malloc(sizeof(char)*MAX_CHAR);
   if (! estru->estado_inicio){
-    for (int i = 0; i < num_estados; i++){
+    for (i = 0; i < estru->num_estados; i++){
       free(estru->estados[i]);
     }
     free(estru->estados);
-    for(int i = 0; i < num_estados; i++){
-      free(estru->estados_nombres[i]);
-    }
-    free(estru->estados_nombres);
     free(estru->simbolos);
-    for(int i = 0; i < num_simbolos; i++){
+    for (i = 0; i < num_simbolos; i++){
       free(estru->simbolos[i]);
     }
     free(estru);
     return NULL;
   }
-  estru->estados_fin=(char**)malloc(100*sizeof(char*));
+  estru->estados_fin=(char**)malloc(sizeof(char*)*MAX_CHAR);
   if (! estru->estados_fin){
     free(estru->estado_inicio);
-    for (int i = 0; i < num_estados; i++){
+    for (i = 0; i < estru->num_estados; i++){
       free(estru->estados[i]);
     }
     free(estru->estados);
-    for(int i = 0; i < num_estados; i++){
-      free(estru->estados_nombres[i]);
-    }
-    free(estru->estados_nombres);
     free(estru->simbolos);
-    for(int i = 0; i < num_simbolos; i++){
+    for (i = 0; i < num_simbolos; i++){
       free(estru->simbolos[i]);
     }
     free(estru);
     return NULL;
   }
-
+  return estru;
 }
 
 char** get_simbolos(estructura* estru){
@@ -142,14 +93,10 @@ void add_simbolo(estructura* estru, char* new_simbolo){
   estru->num_simbolos++;
 }
 
-char** get_estados_nombres(estructura* estru){
-  if (!estru) return NULL;
-  return estru->estados_nombres;
-}
-
 estado* get_estado_bynombre(estructura* estru, char* estado_nombre){
+  int i = 0;
   if (!estru || !estado_nombre) return NULL;
-  for (int i = 0; i < estru->num_estados; i++){
+  for (i = 0; i < estru->num_estados; i++){
     estado* state_inter = ini_estado(estru->num_estados, estru->num_simbolos);
     state_inter = estru->estados[i];
     if (!state_inter) return NULL;
@@ -157,6 +104,7 @@ estado* get_estado_bynombre(estructura* estru, char* estado_nombre){
       return estru->estados[i];
     }
   }
+  return NULL;
 }
 
 estado* get_estado_pos(estructura* estru, int pos){
@@ -167,9 +115,9 @@ estado* get_estado_pos(estructura* estru, int pos){
 
 void add_estado(estructura* estru, estado* new_estado){
   if (!estru || !new_estado || !get_nombre(new_estado)) return;
-  strcpy(estru->estados_nombres[estru->num_estados], get_nombre(new_estado));
-  estru->estados[estru->num_estados] = new_estado;
   estru->num_estados++;
+  estru->estados = realloc(estru->estados, (estru->num_estados)*sizeof(estado*));
+  estru->estados[estru->num_estados-1] = new_estado;
 }
 
 char* get_estado_inicio(estructura* estru){
@@ -198,16 +146,14 @@ int get_num_estados(estructura* estru){
 }
 
 void eliminar_estructura(estructura* estru){
+  int i = 0;
   if (!estru) return;
   free(estru->estados_fin);
   free(estru->estado_inicio);
   free(estru->estados);
-  for(int i = 0; i < estru->num_estados; i++){
-    free(estru->estados_nombres[i]);
-  }
-  free(estru->estados_nombres);
+
   free(estru->simbolos);
-  for(int i = 0; i < estru->num_simbolos; i++){
+  for (i = 0; i < estru->num_simbolos; i++){
     free(estru->simbolos[i]);
   }
   free(estru);

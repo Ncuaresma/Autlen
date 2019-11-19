@@ -1,33 +1,35 @@
 #include "estado.h"
 
-//estructura para estado
-typedef struct _estado{
+/*estructura para estado*/
+struct _estado{
   char* nombre;
-  int id;
-  int tipo; //puede ser INICIAL, FINAL, INICIAL_Y_FINAL O NORMAL
-  int** transiciones; // array de arrasys con los estados a los quue se puede ir y con que simbolos
+  int* id;
+  int tipo; /*puede ser INICIAL, FINAL, INICIAL_Y_FINAL O NORMAL*/
+  int** transiciones; /* array de arrasys con los estados a los quue se puede ir y con que simbolos*/
   int num_simbolos;
   int num_estados;
-}estado;
+};
 
-//inicializando valores del estado
+/*inicializando valores del estado*/
 estado *ini_estado(int num_estados, int num_simbolos){
+  int i = 0;
+  estado* state;
   if (num_simbolos < 0 || num_estados < 0) return NULL;
-  estado* state = (estado*)malloc(sizeof(estado));
+  state = (estado*)malloc(sizeof(estado));
   if (!state) return NULL;
-  state->nombre = (char*)malloc(100*(sizeof(char)));
+  state->nombre = (char*)malloc((sizeof(char))*MAX_CHAR);
   if(!state->nombre){
     free(state);
     return NULL;
   }
-  state->transiciones = (int **)malloc(num_estados*sizeof(int*));
+  state->transiciones = (int **)malloc(num_simbolos*sizeof(int*));
   if (!state->transiciones){
     free(state->nombre);
     free(state);
     return NULL;
   }
-  for (int i=0;i<num_estados;i++){
-		state->transiciones[i] = (int*)malloc(num_simbolos*sizeof(int));
+  for (i=0;i<num_simbolos;i++){
+		state->transiciones[i] = (int*)malloc(num_estados*sizeof(int));
     if (!state->transiciones[i]){
       free(state->transiciones);
       free(state->nombre);
@@ -35,16 +37,32 @@ estado *ini_estado(int num_estados, int num_simbolos){
       return NULL;
     }
   }
+  state->id = (int *)malloc(num_estados*sizeof(int));
+  /*Ponemos por defecto todos los ids a 0*/
+  if (!state->id){
+    for (i = 0; i < num_simbolos; i++){
+      free(state->transiciones[i]);
+    }
+    free(state->transiciones);
+    free(state->nombre);
+    free(state);
+    return NULL;
+  }
+  for (i = 0; i < num_estados; i++){
+    state->id[i] = 0;
+  }
   return state;
 }
 
 estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados, int id){
+  estado* state;
   if (!nombre) return NULL;
   if (tipo > 3 || tipo < 0) return NULL;
   if (num_simbolos < 0 || num_estados < 0) return NULL;
 
-  estado* state = ini_estado(num_estados, num_simbolos);
-  state->id = id;
+  state = ini_estado(num_estados, num_simbolos);
+
+  state->id[id] = 1;
   state->num_estados = num_estados;
   state->num_simbolos = num_simbolos;
   state->tipo = tipo;
@@ -58,8 +76,14 @@ char* get_nombre(estado* estado){
 }
 
 int get_id(estado* estado){
+  int i;
   if(!estado) return -1;
-  return estado->id;
+  for (i = 0; i < estado->num_estados; i++){
+    if(estado->id[i]){
+      return i;
+    }
+  }
+  return -1;
 }
 
 int get_tipo(estado* estado){
@@ -84,9 +108,10 @@ void annadir_trans(estado* estado, int estado_pos, int simbolo){
 }
 
 void eliminar_estado(estado* estado){
+  int i = 0;
   if(!estado) return;
 	if(estado->nombre) free(estado->nombre);
-	for(int i = 0; i < estado->num_simbolos; i++){
+	for (i = 0; i < estado->num_simbolos; i++){
 		free(estado->transiciones[i]);
 	}
 	free(estado->transiciones);
