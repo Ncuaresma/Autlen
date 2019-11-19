@@ -8,7 +8,7 @@ main: main.o transforma.o afnd.o
 	$(CC) $(CFLAGS) -o main main.o transforma.o afnd.o
 
 transforma.o: transforma.c transforma.h estado.o estructura.o
-	$(CC) $(CFLAGS) -c trasforma.c  -o estado.o estructura.o
+	$(CC) $(CFLAGS) -c transforma.c  -o estado.o estructura.o
 
 estado.o: estado.c estado.h estructura.o
 	$(CC) $(CFLAGS) -c estado.c -o estado.o

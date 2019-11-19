@@ -37,12 +37,12 @@ void introducir_estados(int num_estados, int num_simbolos, AFND * afnd, estructu
   //Obtener el estado INICIAL
   int ini = AFNDIndiceEstadoInicial(afnd);
   nombre_est = AFNDNombreEstadoEn(afnd, ini);
-  strcpy(estru->estado_inicio, nombre_est);
+  strcpy(get_estado_inicio(estru), nombre_est);
   //Obtener el estado FINAL
   //no se por que pone primer, lo mismo es por que hay mas, en este caso usamos el if del bucle
   int fin = AFNDIndicePrimerEstadoFinal(afnd);
   nombre_est = AFNDNombreEstadoEn(afnd, fin);
-  strcpy(estru->estado_fin, nombre_est);
+  strcpy(get_estados_fin(estru)[0], nombre_est);
 
   for (int i = 0; i < num_estados; i++){
     nombre_est = AFNDNombreEstadoEn(afnd, i);

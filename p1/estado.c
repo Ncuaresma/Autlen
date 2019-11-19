@@ -14,12 +14,11 @@ estado *ini_estado(int num_estados, int num_simbolos){
   if (num_simbolos < 0 || num_estados < 0) return NULL;
   estado* state = (estado*)malloc(sizeof(estado));
   if (!state) return NULL;
-  state->nombre = (char*)malloc((sizeof(char)));
+  state->nombre = (char*)malloc(100*(sizeof(char)));
   if(!state->nombre){
     free(state);
     return NULL;
   }
-  state->nombre = NULL;
   state->transiciones = (int **)malloc(num_estados*sizeof(int*));
   if (!state->transiciones){
     free(state->nombre);
