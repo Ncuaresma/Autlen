@@ -22,12 +22,15 @@
 typedef struct _estado estado;
 estado* ini_estado(int num_estados_base, int num_simbolos);
 estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados_base, int id);
+estado* crear_estado_combinado(char* nombre, int tipo, int num_simbolos, int num_estados_base, int id, int* codificacion);
 char* get_nombre(estado* estado);
 int get_id(estado* estado);
+int* get_codificacion(estado* estado);
 int get_tipo(estado* estado);
 int** get_transciones(estado* estado);
 int* get_transicion_simbolo(estado* estado, int pos_estado);
 void annadir_trans(estado* estado, int estado_pos, int simbolo);
+void annadir_trans_comb(estado* estado, int* trans, int simbolo);
 void eliminar_estado(estado* est);
 
 

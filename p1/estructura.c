@@ -149,6 +149,12 @@ int get_num_estados(estructura* estru){
   return estru->num_estados;
 }
 
+int get_num_estados_base(estructura* estru){
+  if (!estru) return -1;
+  return estru->num_estados_base;
+}
+
+
 void eliminar_estructura(estructura* estru){
   int i = 0;
   if (!estru) return;

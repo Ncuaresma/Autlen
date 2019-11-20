@@ -3,7 +3,8 @@
 /*estructura para estado*/
 struct _estado{
   char* nombre;
-  int* id;
+  int id;
+  int* codificacion;
   int tipo; /*puede ser INICIAL, FINAL, INICIAL_Y_FINAL O NORMAL*/
   int** transiciones; /* array de arrasys con los estados a los quue se puede ir y con que simbolos*/
   int num_simbolos;
@@ -37,9 +38,9 @@ estado *ini_estado(int num_estados_base, int num_simbolos){
       return NULL;
     }
   }
-  state->id = (int *)malloc(num_estados_base*sizeof(int));
+  state->codificacion = (int *)malloc(num_estados_base*sizeof(int));
   /*Ponemos por defecto todos los ids a 0*/
-  if (!state->id){
+  if (!state->codificacion){
     for (i = 0; i < num_simbolos; i++){
       free(state->transiciones[i]);
     }
@@ -49,7 +50,7 @@ estado *ini_estado(int num_estados_base, int num_simbolos){
     return NULL;
   }
   for (i = 0; i < num_estados_base; i++){
-    state->id[i] = 0;
+    state->codificacion[i] = 0;
   }
   return state;
 }
@@ -62,7 +63,25 @@ estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados_b
 
   state = ini_estado(num_estados_base, num_simbolos);
 
-  state->id[id] = 1;
+  state->id = id;
+  state->codificacion[id] = 1;
+  state->num_estados_base = num_estados_base;
+  state->num_simbolos = num_simbolos;
+  state->tipo = tipo;
+  strcpy(state->nombre, nombre);
+  return state;
+}
+
+estado* crear_estado_combinado(char* nombre, int tipo, int num_simbolos, int num_estados_base, int id, int* codificacion){
+  estado* state;
+  if (!nombre) return NULL;
+  if (tipo > 3 || tipo < 0) return NULL;
+  if (num_simbolos < 0 || num_estados_base < 0) return NULL;
+
+  state = ini_estado(num_estados_base, num_simbolos);
+
+  state->id = id;
+  state->codificacion = codificacion;
   state->num_estados_base = num_estados_base;
   state->num_simbolos = num_simbolos;
   state->tipo = tipo;
@@ -75,16 +94,16 @@ char* get_nombre(estado* estado){
   return estado->nombre;
 }
 
-int get_id(estado* estado){
-  int i;
-  if(!estado) return -1;
-  for (i = 0; i < estado->num_estados_base; i++){
-    if(estado->id[i]){
-      return i;
-    }
-  }
-  return -1;
+int* get_codificacion(estado* estado){
+  if(!estado) return NULL;
+  return estado->codificacion;
 }
+
+int get_id(estado* estado){
+  if(!estado) return -1;
+  return estado->id;
+}
+
 
 int get_tipo(estado* estado){
   if(!estado) return -1;
@@ -103,8 +122,16 @@ int* get_transicion_simbolo(estado* estado, int pos_simbolo){
 
 void annadir_trans(estado* estado, int estado_pos, int simbolo){
     if(!estado) return;
+    printf("\n%s:Add 1 in %d de simbolo %d\n",estado->nombre, estado_pos, simbolo);
     if(estado_pos < 0 || estado_pos >= estado->num_estados_base || simbolo < 0 || simbolo >= estado->num_simbolos) return;
-    estado->transiciones[estado_pos][simbolo] = 1;
+    estado->transiciones[simbolo][estado_pos] = 1;
+}
+
+void annadir_trans_comb(estado* estado, int* trans, int simbolo){
+    if(!estado) return;
+    if(simbolo < 0 || simbolo >= estado->num_simbolos) return;
+    /*printf("CASTT %d\n", estado->transiciones[simbolo] & trans);
+    estado->transiciones[simbolo] = (int*)(estado->transiciones[simbolo] & trans);*/
 }
 
 void eliminar_estado(estado* estado){

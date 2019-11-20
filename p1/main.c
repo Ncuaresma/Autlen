@@ -34,6 +34,8 @@ int main(int argc, char ** argv)
 	/*son las de transicion lambda*/
 	AFNDInsertaLTransicion(p_afnd, "q0", "q1");
 	AFNDInsertaLTransicion(p_afnd, "q3", "q5");
+	/*Para probar qeu puede anidar lambdas*/
+	/*AFNDInsertaLTransicion(p_afnd, "q5", "q1");*/
 	AFNDCierraLTransicion(p_afnd);
 	/*Creando imagen del automata inicial*/
 	AFNDADot(p_afnd);

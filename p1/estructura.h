@@ -38,6 +38,7 @@ estado** get_estados_fin(estructura* estru);
 void add_estado_fin(estructura* estru, estado* new_estado);
 int get_num_simbolos(estructura* estru);
 int get_num_estados(estructura* estru);
+int get_num_estados_base(estructura* estru);
 void eliminar_estructura(estructura* estru);
 /*hacer los sets*/
 

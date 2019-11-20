@@ -16,17 +16,27 @@ AFND * AFNDTransforma(AFND * afnd){
   num_simbolos = AFNDNumSimbolos(afnd);
   num_estados_base = AFNDNumEstados(afnd);
 
-   estru = crear_estructura(num_simbolos);
+  estru = crear_estructura(num_simbolos);
   /*inicializa los estados y crea el array de todos los estados existentes*/
   introducir_estados(num_estados_base, num_simbolos, afnd, estru);
   /*crea el array de simbolos existentes*/
   introducir_simbolos(num_simbolos, afnd, estru);
   /*Transformar a un autómata determinista*/
 
+  /*ver que el estado inicial tenga lambda y añadimos a la matriz el nuevo estado*/
+  actualizar_ini(afnd, estru, num_simbolos, num_estados_base);
+
+  /*Recorrer la matriz transicion y generar los estados nuevos combinados que hay*/
+  /*meterlos en la matriz estos estados nuevos.*/
+  /*y hacer esto hasta que todos los estados nuevos que se vayan generando esten creados(bucle de lo que ya hay)*/
+  /*desde el nuevo estado inicial ir recorriendo la matriz y hacer transiciones indicadas a estados indicados*/
+  /*si desde un estado vas a dos vas metiendo en una pila los estado que has descubiertop y luego los exploras ((EDYL))jeje*/
+  /*se genera finalmee el automata nuevo*/
+
   /*para terminar hay que crear un un automata nuevo con todo*/
   /*actualizar_automata(estru);*/
   /*MIERDA QUE HAY QUE BORRAR*/
-  funcion_probar(num_estados_base, num_simbolos, afnd, estru);
+  funcion_probar(num_simbolos, afnd, estru);
   /*Devuelvo esto para probar lo de imprimir matriz, luego habra que devolver el afnd resultante*/
   return afnd;
 }
@@ -55,11 +65,9 @@ void introducir_estados(int num_estados_base, int num_simbolos, AFND * afnd, est
     }
     else*/
     /*Introducimos en la estructura todos los estados finales existentes*/
+    est = crear_estado(nombre_est, tipo_est, num_simbolos, num_estados_base, i);
     if (tipo_est == FINAL){
-      est = crear_estado(nombre_est, tipo_est, num_simbolos, num_estados_base, i);
       add_estado_fin(estru, est);
-    }else{
-      est = crear_estado(nombre_est, tipo_est, num_simbolos, num_estados_base, i);
     }
 
     /*Ver de cada estado a cual de los siguientes va y con que símbolo*/
@@ -67,8 +75,8 @@ void introducir_estados(int num_estados_base, int num_simbolos, AFND * afnd, est
     estados_contiguos(est, num_estados_base, num_simbolos, afnd); /*---> no se si hacerlo antes o despues de añadir el estado*/
     /*Añadimos el nuevo estado a la estructura.*/
     add_estado(estru, est);
-    /*TOCHACO ASQUEROSO QUE HAY QUE BORRAR*/
-    eliminar_estado(est);
+
+
   }
 
   /*Obtenemos el estado inicial para meterlo en la struct*/
@@ -78,16 +86,6 @@ void introducir_estados(int num_estados_base, int num_simbolos, AFND * afnd, est
   if(est){
     cambiar_estado_inicio(estru, est);
   }
-
-
-  /*no se si aqui o en la de transformar (arriba)*/
-  /*ver que el estado inicial tenga lambda y añadimos a la matriz el nuevo estado*/
-  /*Recorrer la matriz transicion y generar los estados nuevos combinados que hay*/
-  /*meterlos en la matriz estos estados nuevos.*/
-  /*y hacer esto hasta que todos los estados nuevos que se vayan generando esten creados(bucle de lo que ya hay)*/
-  /*desde el nuevo estado inicial ir recorriendo la matriz y hacer transiciones indicadas a estados indicados*/
-  /*si desde un estado vas a dos vas metiendo en una pila los estado que has descubiertop y luego los exploras ((EDYL))jeje*/
-  /*se genera finalmee el automata nuevo*/
 }
 
 /*Saca mediante las funciones los símbolos admitidos por el autómata
@@ -104,15 +102,34 @@ void introducir_simbolos(int num_simbolos, AFND * afnd, estructura* estru){
 /**/
 void estados_contiguos(estado* estado, int num_estados_base, int num_simbolos, AFND * afnd){
   int i = 0;
-  int id_e = get_id(estado);
-  if(id_e == -1){
-    return;
-  }
   /*metemos en casa struct de cada estado sus transiciones, dependiendo del simbolo*/
   for (i = 0; i < num_estados_base; i++){
     /*en caso de que exista transición*/
-    if(AFNDLTransicionIJ(afnd, id_e, i)){
-      buscar_simbolo(afnd, estado, i, num_simbolos, num_estados_base);
+    buscar_simbolo(afnd, estado, i, num_simbolos, num_estados_base);
+  }
+}
+
+void estados_contiguos_generados(estructura* estru, estado* estado, int num_estados_base, int num_simbolos, AFND * afnd){
+  int* cod;
+  int** trans;
+  int i, j, k;
+  cod = (int*)malloc(num_estados_base*(sizeof(int)));
+  trans = (int **)malloc(num_simbolos*sizeof(int*));
+  if(!estado) return;
+  cod = get_codificacion(estado);
+  /*metemos en casa struct de cada estado sus transiciones, dependiendo del simbolo*/
+  for (i = 0; i < num_estados_base; i++){
+    /*Paca cada estado que esta en el estado combinado*/
+    if(cod[i]){
+      trans = get_transciones(get_estado_pos(estru, i));
+      for(j = 0; j < num_simbolos; j++){
+        for(k = 0; k < num_estados_base; k++){
+          /*añadimos la transicion indicada.*/
+          if (trans[j][k]){
+            annadir_trans(estado, k, j);
+          }
+        }
+      }
     }
   }
 }
@@ -127,32 +144,99 @@ void buscar_simbolo(AFND * afnd, estado* estado, int n_estado2, int num_simbolos
   }
   for (i = 0; i < num_simbolos; i++){
     if(AFNDTransicionIndicesEstadoiSimboloEstadof(afnd, id_e, i, n_estado2)){
+      printf("\nestado1: %d estado2: %d simbolo: %d\n",id_e, n_estado2, i );
       /*añadimos la transicion indicada.*/
       annadir_trans(estado, n_estado2, i);
       /*en caso de que del segundo estado vaya a otro con lambda este tambien se incluiria*/
       /*no cubrimos el caso de que se vaya a dos encadenados con lambda*/
       for (j = 0; j < num_estados_base; j++){
-        if(AFNDCierreLTransicionIJ(afnd, n_estado2, j)){
-          annadir_trans(estado, j, i);
+        if(n_estado2 != j){
+          if(AFNDCierreLTransicionIJ(afnd, n_estado2, j)){
+            annadir_trans(estado, j, i);
+          }
         }
       }
     }
   }
 }
 
-void funcion_probar(int num_estados_base, int num_simbolos, AFND* afnd, estructura* estru){
-  int i,j,k = 0;
+/*ver que el estado inicial tenga lambda y añadimos a la matriz el nuevo estado*/
+void actualizar_ini(AFND * afnd, estructura* estru, int num_simbolos, int num_estados_base){
+  int i;
+  estado* est;
+  int* codificacion;
+  char* nombre = (char*)malloc(num_estados_base*sizeof(char));
+  int n_est;
+  int id = get_num_estados(estru);
+  est = get_estado_inicio(estru);
+  codificacion = get_codificacion(est);
+  n_est = get_id(est);
   for (i = 0; i < num_estados_base; i++){
+    if(AFNDCierreLTransicionIJ(afnd, n_est, i)){
+      if (strcmp(nombre, AFNDNombreEstadoEn(afnd, i))!=0){
+        strcat(nombre, AFNDNombreEstadoEn(afnd, i));
+        codificacion[i] = 1;
+      }
+    }
+  }
+  est = crear_estado_combinado(nombre, INICIAL, num_simbolos, num_estados_base, id, codificacion);
+  estados_contiguos_generados(estru, est, num_estados_base, num_simbolos, afnd);/*Añadimos el nuevo estado a la estructura.*/
+  add_estado(estru, est);
+  free(nombre);
+}
+
+/*ver que el estado inicial tenga lambda y añadimos a la matriz el nuevo estado*/
+void estado_matriz(AFND * afnd, estructura* estru, int num_simbolos, int num_estados_base){
+  int i;
+  estado* est;
+  int* codificacion;
+  char* nombre = (char*)malloc(num_estados_base*sizeof(char));
+  int n_est;
+  int id = get_num_estados(estru);
+  est = get_estado_inicio(estru);
+  codificacion = get_codificacion(est);
+  n_est = get_id(est);
+  for (i = 0; i < num_estados_base; i++){
+    if(AFNDCierreLTransicionIJ(afnd, n_est, i)){
+      if (strcmp(nombre, AFNDNombreEstadoEn(afnd, i))!=0){
+        strcat(nombre, AFNDNombreEstadoEn(afnd, i));
+        codificacion[i] = 1;
+      }
+    }
+  }
+  est = crear_estado_combinado(nombre, INICIAL, num_simbolos, num_estados_base, id, codificacion);
+  estados_contiguos_generados(estru, est, num_estados_base, num_simbolos, afnd);/*Añadimos el nuevo estado a la estructura.*/
+  add_estado(estru, est);
+  free(nombre);
+}
+
+char* obtener_nombre(AFND * afnd, int* cod, int num_estados_base){
+  int i;
+  char* nombre = (char*)malloc(num_estados_base*sizeof(char));
+  for (i = 0; i < num_estados_base; i++){
+    if(cod[i]){
+      strcat(nombre, AFNDNombreEstadoEn(afnd, i));
+    }
+  }
+  return nombre;
+}
+
+void funcion_probar(int num_simbolos, AFND* afnd, estructura* estru){
+  int i,j,k = 0;
+  int num_estados=get_num_estados_base(estru);
+  int* ag = (int*) malloc(num_estados*sizeof(int));
+  for (i = 0; i < num_estados; i++){
     estado* estadito = get_estado_pos(estru, i);
     printf("\n%d:\n", get_id(estadito));
     for (j = 0; j < num_simbolos; j++){
-      int* ag = get_transicion_simbolo(estadito, j);
-      for (k = 0; k < num_estados_base; k++){
-        /*printf("%d", ag[k]);*/
+      ag = get_transicion_simbolo(estadito, j);
+      for (k = 0; k < num_estados ; k++){
+        printf("%d", ag[k]);
       }
       printf("\n");
     }
   }
+  free(ag);
 }
 
 /*void funcion_probar(int num_estados_base, int num_simbolos, AFND* afnd, estructura* estru){
