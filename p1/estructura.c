@@ -5,8 +5,8 @@ struct _estructura{
   char** simbolos; /*alfabeti*/
   /*char** estados_nombres;*/
   estado** estados;
-  char* estado_inicio;
-  char** estados_fin;
+  estado* estado_inicio;
+  estado** estados_fin;
   int num_estados;
   int num_simbolos;
   int num_finales;
@@ -21,6 +21,7 @@ estructura* crear_estructura(int num_simbolos){
 
   estru->num_estados = 0;
   estru->num_simbolos = num_simbolos;
+  estru->num_finales = 0;
 
   estru->simbolos = (char**)malloc(num_simbolos*sizeof(char*));
   if (! estru->simbolos){
@@ -46,11 +47,8 @@ estructura* crear_estructura(int num_simbolos){
     return NULL;
   }
 
-  estru->estado_inicio=(char*)malloc(sizeof(char)*MAX_CHAR);
+  estru->estado_inicio = (estado*)malloc(sizeof(estru->estado_inicio));
   if (! estru->estado_inicio){
-    for (i = 0; i < estru->num_estados; i++){
-      free(estru->estados[i]);
-    }
     free(estru->estados);
     free(estru->simbolos);
     for (i = 0; i < num_simbolos; i++){
@@ -59,12 +57,9 @@ estructura* crear_estructura(int num_simbolos){
     free(estru);
     return NULL;
   }
-  estru->estados_fin=(char**)malloc(sizeof(char*)*MAX_CHAR);
+  estru->estados_fin = (estado**)malloc(sizeof(estado*));
   if (! estru->estados_fin){
     free(estru->estado_inicio);
-    for (i = 0; i < estru->num_estados; i++){
-      free(estru->estados[i]);
-    }
     free(estru->estados);
     free(estru->simbolos);
     for (i = 0; i < num_simbolos; i++){
@@ -89,8 +84,10 @@ char* get_simbolo_pos(estructura* estru, int pos){
 
 void add_simbolo(estructura* estru, char* new_simbolo){
   if (!estru || !new_simbolo) return;
-  strcpy(estru->simbolos[estru->num_simbolos], new_simbolo);
   estru->num_simbolos++;
+  estru->simbolos = realloc(estru->simbolos, (estru->num_simbolos)*sizeof(char*));
+  estru->simbolos[estru->num_simbolos-1] = (char*)malloc(sizeof(char)*MAX_CHAR);
+  strcpy(estru->simbolos[estru->num_simbolos-1], new_simbolo);
 }
 
 estado* get_estado_bynombre(estructura* estru, char* estado_nombre){
@@ -100,7 +97,7 @@ estado* get_estado_bynombre(estructura* estru, char* estado_nombre){
     estado* state_inter = ini_estado(estru->num_estados, estru->num_simbolos);
     state_inter = estru->estados[i];
     if (!state_inter) return NULL;
-    if (strcmp( get_nombre(state_inter), estado_nombre) == 0){
+    if(strcmp(get_nombre(state_inter), estado_nombre) == 0){
       return estru->estados[i];
     }
   }
@@ -120,17 +117,24 @@ void add_estado(estructura* estru, estado* new_estado){
   estru->estados[estru->num_estados-1] = new_estado;
 }
 
-char* get_estado_inicio(estructura* estru){
+void add_estado_fin(estructura* estru, estado* new_estado){
+  if (!estru || !new_estado || !get_nombre(new_estado)) return;
+  estru->num_finales++;
+  estru->estados_fin = realloc(estru->estados_fin, (estru->num_finales)*sizeof(estado*));
+  estru->estados_fin[estru->num_finales-1] = new_estado;
+}
+
+estado* get_estado_inicio(estructura* estru){
   if (!estru) return NULL;
   return estru->estado_inicio;
 }
 
-void cambiar_estado_inicio(estructura* estru, char* new_estado_inicio){
+void cambiar_estado_inicio(estructura* estru, estado* new_estado_inicio){
   if (!estru || !new_estado_inicio) return;
-  strcpy(estru->estado_inicio, new_estado_inicio);
+  estru->estado_inicio = new_estado_inicio;
 }
 
-char** get_estados_fin(estructura* estru){
+estado** get_estados_fin(estructura* estru){
   if (!estru) return NULL;
   return estru->estados_fin;
 }

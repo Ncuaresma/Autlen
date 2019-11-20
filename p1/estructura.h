@@ -17,9 +17,9 @@
   char** simbolos;
   char** estados_nombres;
   estado** estados;
-  char* estado_inicio;
-  char** estado_fin;
-  int num_estados;
+  estado* estado_inicio;
+  estado** estado_fin;
+  int num_estados_base;
   int num_simbolos;
   int num_finales;
 }estructura;*/
@@ -32,9 +32,10 @@ void add_simbolo(estructura* estru, char* new_simbolo);
 estado* get_estado_bynombre(estructura* estru, char* estado_nombre);
 estado* get_estado_pos(estructura* estru, int pos);
 void add_estado(estructura* estru, estado* new_estado);
-char* get_estado_inicio(estructura* estru);
-void cambiar_estado_inicio(estructura* estru, char* new_estado_inicio);
-char** get_estados_fin(estructura* estru);
+estado* get_estado_inicio(estructura* estru);
+void cambiar_estado_inicio(estructura* estru, estado* new_estado_inicio);
+estado** get_estados_fin(estructura* estru);
+void add_estado_fin(estructura* estru, estado* new_estado);
 int get_num_simbolos(estructura* estru);
 int get_num_estados(estructura* estru);
 void eliminar_estructura(estructura* estru);

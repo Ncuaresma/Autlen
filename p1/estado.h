@@ -17,11 +17,11 @@
   int tipo; //puede ser INICIAL, FINAL, INICIAL_Y_FINAL O NORMAL
   int** transiciones; // array de arrasys con los estados a los quue se puede ir y con que simbolos
   int num_simbolos;
-  int num_estados;
+  int num_estados_base;
 }estado;*/
 typedef struct _estado estado;
-estado* ini_estado(int num_estados, int num_simbolos);
-estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados, int id);
+estado* ini_estado(int num_estados_base, int num_simbolos);
+estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados_base, int id);
 char* get_nombre(estado* estado);
 int get_id(estado* estado);
 int get_tipo(estado* estado);
