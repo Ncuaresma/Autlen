@@ -24,7 +24,7 @@
   int num_finales;
 }estructura;*/
 typedef struct _estructura estructura;
-estructura* crear_estructura(int num_simbolos);
+estructura* crear_estructura(int num_simbolos, int num_estados_base);
 char** get_simbolos(estructura* estru);
 char* get_simbolo_pos(estructura* estru, int pos);
 void add_simbolo(estructura* estru, char* new_simbolo);

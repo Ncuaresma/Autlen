@@ -10,9 +10,10 @@ struct _estructura{
   int num_estados;
   int num_simbolos;
   int num_finales;
+  int num_estados_base;
 };
 
-estructura* crear_estructura(int num_simbolos){
+estructura* crear_estructura(int num_simbolos, int num_estados_base){
   int i = 0;
   estructura* estru = (estructura*)malloc(sizeof(estructura));
 
@@ -20,6 +21,7 @@ estructura* crear_estructura(int num_simbolos){
   if (!estru) return NULL;
 
   estru->num_estados = 0;
+  estru->num_estados_base = num_estados_base;
   estru->num_simbolos = num_simbolos;
   estru->num_finales = 0;
 

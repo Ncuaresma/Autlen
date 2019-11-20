@@ -16,7 +16,7 @@ AFND * AFNDTransforma(AFND * afnd){
   num_simbolos = AFNDNumSimbolos(afnd);
   num_estados_base = AFNDNumEstados(afnd);
 
-  estru = crear_estructura(num_simbolos);
+  estru = crear_estructura(num_simbolos, AFNDNumEstados(afnd));
   /*inicializa los estados y crea el array de todos los estados existentes*/
   introducir_estados(num_estados_base, num_simbolos, afnd, estru);
   /*crea el array de simbolos existentes*/
@@ -223,14 +223,15 @@ char* obtener_nombre(AFND * afnd, int* cod, int num_estados_base){
 
 void funcion_probar(int num_simbolos, AFND* afnd, estructura* estru){
   int i,j,k = 0;
-  int num_estados=get_num_estados_base(estru);
+  int num_estados_base=get_num_estados_base(estru);
+  int num_estados=get_num_estados(estru);
   int* ag = (int*) malloc(num_estados*sizeof(int));
   for (i = 0; i < num_estados; i++){
     estado* estadito = get_estado_pos(estru, i);
     printf("\n%d:\n", get_id(estadito));
     for (j = 0; j < num_simbolos; j++){
       ag = get_transicion_simbolo(estadito, j);
-      for (k = 0; k < num_estados ; k++){
+      for (k = 0; k < num_estados_base ; k++){
         printf("%d", ag[k]);
       }
       printf("\n");
