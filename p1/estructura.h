@@ -40,6 +40,8 @@ int get_num_simbolos(estructura* estru);
 int get_num_estados(estructura* estru);
 int get_num_estados_base(estructura* estru);
 void eliminar_estructura(estructura* estru);
+int get_num_finales(estructura* estru);
+
 /*hacer los sets*/
 
 

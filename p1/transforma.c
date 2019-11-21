@@ -28,6 +28,9 @@ AFND * AFNDTransforma(AFND * afnd){
 
   /*Recorrer la matriz transicion y generar los estados nuevos combinados que hay*/
   /*meterlos en la matriz estos estados nuevos.*/
+
+  /*estado_matriz(afnd, estru);*/
+  
   /*y hacer esto hasta que todos los estados nuevos que se vayan generando esten creados(bucle de lo que ya hay)*/
   /*desde el nuevo estado inicial ir recorriendo la matriz y hacer transiciones indicadas a estados indicados*/
   /*si desde un estado vas a dos vas metiendo en una pila los estado que has descubiertop y luego los exploras ((EDYL))jeje*/
@@ -109,10 +112,11 @@ void estados_contiguos(estado* estado, int num_estados_base, int num_simbolos, A
   }
 }
 
-void estados_contiguos_generados(estructura* estru, estado* estado, int num_estados_base, int num_simbolos, AFND * afnd){
+void estados_contiguos_generados(estructura* estru, estado* estado, int num_simbolos, AFND * afnd){
   int* cod;
   int** trans;
   int i, j, k;
+  int num_estados_base = get_num_estados_base(estru);
   cod = (int*)malloc(num_estados_base*(sizeof(int)));
   trans = (int **)malloc(num_simbolos*sizeof(int*));
   if(!estado) return;
@@ -168,44 +172,29 @@ void actualizar_ini(AFND * afnd, estructura* estru, int num_simbolos, int num_es
   char* nombre = (char*)malloc(num_estados_base*sizeof(char));
   int n_est;
   int id = get_num_estados(estru);
+  int tipo = INICIAL;
   est = get_estado_inicio(estru);
-  codificacion = get_codificacion(est);
   n_est = get_id(est);
-  for (i = 0; i < num_estados_base; i++){
-    if(AFNDCierreLTransicionIJ(afnd, n_est, i)){
-      if (strcmp(nombre, AFNDNombreEstadoEn(afnd, i))!=0){
-        strcat(nombre, AFNDNombreEstadoEn(afnd, i));
-        codificacion[i] = 1;
-      }
-    }
-  }
-  est = crear_estado_combinado(nombre, INICIAL, num_simbolos, num_estados_base, id, codificacion);
-  estados_contiguos_generados(estru, est, num_estados_base, num_simbolos, afnd);/*Añadimos el nuevo estado a la estructura.*/
-  add_estado(estru, est);
-  free(nombre);
-}
+  codificacion = get_codificacion(est);
+  strcpy(nombre,"");
 
-/*ver que el estado inicial tenga lambda y añadimos a la matriz el nuevo estado*/
-void estado_matriz(AFND * afnd, estructura* estru, int num_simbolos, int num_estados_base){
-  int i;
-  estado* est;
-  int* codificacion;
-  char* nombre = (char*)malloc(num_estados_base*sizeof(char));
-  int n_est;
-  int id = get_num_estados(estru);
-  est = get_estado_inicio(estru);
-  codificacion = get_codificacion(est);
-  n_est = get_id(est);
   for (i = 0; i < num_estados_base; i++){
     if(AFNDCierreLTransicionIJ(afnd, n_est, i)){
       if (strcmp(nombre, AFNDNombreEstadoEn(afnd, i))!=0){
         strcat(nombre, AFNDNombreEstadoEn(afnd, i));
         codificacion[i] = 1;
+
+        if(AFNDTipoEstadoEn(afnd, i) == FINAL || AFNDTipoEstadoEn(afnd, i) == INICIAL_Y_FINAL){
+          tipo = INICIAL_Y_FINAL;
+        }
       }
     }
   }
-  est = crear_estado_combinado(nombre, INICIAL, num_simbolos, num_estados_base, id, codificacion);
-  estados_contiguos_generados(estru, est, num_estados_base, num_simbolos, afnd);/*Añadimos el nuevo estado a la estructura.*/
+  est = crear_estado_combinado(nombre, tipo, num_simbolos, num_estados_base, id, codificacion);
+  if (tipo == INICIAL_Y_FINAL){
+    add_estado_fin(estru, est);
+  }
+  estados_contiguos_generados(estru, est, num_simbolos, afnd);/*Añadimos el nuevo estado a la estructura.*/
   add_estado(estru, est);
   free(nombre);
 }
@@ -213,6 +202,7 @@ void estado_matriz(AFND * afnd, estructura* estru, int num_simbolos, int num_est
 char* obtener_nombre(AFND * afnd, int* cod, int num_estados_base){
   int i;
   char* nombre = (char*)malloc(num_estados_base*sizeof(char));
+  strcpy(nombre,"");
   for (i = 0; i < num_estados_base; i++){
     if(cod[i]){
       strcat(nombre, AFNDNombreEstadoEn(afnd, i));
@@ -220,6 +210,83 @@ char* obtener_nombre(AFND * afnd, int* cod, int num_estados_base){
   }
   return nombre;
 }
+
+int estado_fin(int* codificacion, estructura* estru){
+  int i, j;
+  int num_estados_base = get_num_estados_base(estru);
+  int num_finales = get_num_finales(estru);
+  for(i = 0; i < num_estados_base; i++){
+    if(codificacion[i]){
+      for(j = 0; j < num_finales; j++){
+        if(i == get_id(get_estados_fin(estru)[j])){
+          return 1;
+        }
+      }
+    }
+  }
+  return 0;
+}
+
+
+
+int estado_existente(char* nombre, estructura* estru){
+  int i;
+  int num_estados = get_num_estados(estru);
+  for (i = 0; i < num_estados; i++){
+    if(strcmp(nombre, get_nombre(get_estado_pos(estru, i))) == 0){
+      return 1;
+    }
+  }
+  return 0;
+}
+
+/*ver que el estado inicial tenga lambda y añadimos a la matriz el nuevo estado*/
+void estado_matriz(AFND * afnd, estructura* estru){
+  int i,j;
+  int num_estados = get_num_estados(estru);
+  int num_simbolos = get_num_simbolos(estru);
+  int num_estados_base = get_num_estados_base(estru);
+  estado* est;
+  int** trans;
+  char* nombre = (char*)malloc(MAX_CHAR*sizeof(char));
+  int id = get_num_estados(estru);
+  int tipo = NORMAL;
+
+  est = ini_estado(num_simbolos, num_estados_base);
+
+  trans = (int**)malloc(num_simbolos*(sizeof(int*)));
+  for (i=0;i<num_simbolos;i++){
+        trans[i] = (int*)malloc(num_estados_base*sizeof(int));
+  }
+
+  for (i = 0; i < num_estados; i++){
+    tipo = NORMAL;
+    est = get_estado_pos(estru, i);
+    trans = get_transciones(est);
+    for (j = 0; j < num_simbolos; j++){
+      nombre = obtener_nombre(afnd, trans[j], num_estados_base);
+      if(nombre){
+        if(!estado_existente(nombre, estru)){
+          if(estado_fin(trans[j], estru)){
+            tipo = FINAL;
+          }
+          est = crear_estado_combinado(nombre, tipo, num_simbolos, num_estados_base, id, trans[j]);
+          if(tipo == FINAL){
+            add_estado_fin(estru, est);
+          }
+          estados_contiguos_generados(estru, est, num_simbolos, afnd);/*Añadimos el nuevo estado a la estructura.*/
+          add_estado(estru, est);
+          id = get_num_estados(estru);
+        }
+      }
+    }
+  }
+  for (i=0;i<num_simbolos;i++){
+        free(trans[i]);
+  }
+}
+
+
 
 void funcion_probar(int num_simbolos, AFND* afnd, estructura* estru){
   int i,j,k = 0;

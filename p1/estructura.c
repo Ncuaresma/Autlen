@@ -169,5 +169,9 @@ void eliminar_estructura(estructura* estru){
     free(estru->simbolos[i]);
   }
   free(estru);
+}
 
+int get_num_finales(estructura* estru){
+  if (!estru) return -1;
+  return estru->num_finales;
 }
