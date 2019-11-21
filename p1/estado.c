@@ -33,6 +33,10 @@ estado *ini_estado(int num_estados_base, int num_simbolos){
   }
   for (i=0;i<num_simbolos;i++){
 		state->transiciones[i] = (int*)malloc(state->num_estados_base*sizeof(int));
+    for(int j = 0; j < num_estados_base;j++){
+      state->transiciones[i][j] = 0;
+    }
+    /*state->transiciones[i]=0;*/
     if (!state->transiciones[i]){
       free(state->transiciones);
       free(state->nombre);

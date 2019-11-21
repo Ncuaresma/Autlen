@@ -30,8 +30,8 @@ AFND * AFNDTransforma(AFND * afnd){
   /*Recorrer la matriz transicion y generar los estados nuevos combinados que hay*/
   /*meterlos en la matriz estos estados nuevos.*/
   num_estados = get_num_estados(estru);
-  for (i = 0; i < num_estados; i++){
-    estado_matriz(afnd, estru, i);
+  for (i = 0; i < num_estados; i++){ 
+      estado_matriz(afnd, estru, i);
     /* el numero de estados que tenemos ahora, por si ha añadido alguno mas*/
     num_estados = get_num_estados(estru);
   }
@@ -124,8 +124,8 @@ void estados_contiguos_generados(estructura* estru, estado* estado, int num_simb
   int** trans;
   int i, j, k;
   int num_estados_base = get_num_estados_base(estru);
-  cod = (int*)malloc(num_estados_base*(sizeof(int)));
-  trans = (int **)malloc(num_simbolos*sizeof(int*));
+  /*cod = (int*)malloc(num_estados_base*(sizeof(int)));*/
+  /*trans = (int **)malloc(num_simbolos*sizeof(int*));*/
   if(!estado) return;
   cod = get_codificacion(estado);
   /*metemos en casa struct de cada estado sus transiciones, dependiendo del simbolo*/
@@ -260,12 +260,12 @@ void estado_matriz(AFND * afnd, estructura* estru, int n_estado){
   int tipo = NORMAL;
 
   /*Puede que no se necesiteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee*/
-  est = ini_estado(num_simbolos, num_estados_base);
+  /*est = ini_estado(num_simbolos, num_estados_base);*/
   /*y esto iguaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaal*/
-  trans = (int**)malloc(num_simbolos*(sizeof(int*)));
-  for (i=0;i<num_simbolos;i++){
+  /*trans = (int**)malloc(num_simbolos*(sizeof(int*)));*/
+  /*for (i=0;i<num_simbolos;i++){
         trans[i] = (int*)malloc(num_estados_base*sizeof(int));
-  }
+  }*/
 
   est = get_estado_pos(estru, n_estado);
   /*Obtenemos las transiciones de ese estado para ver si va a algun estado nuevo*/
@@ -291,9 +291,9 @@ void estado_matriz(AFND * afnd, estructura* estru, int n_estado){
       }
     }
   }
-  for (i=0;i<num_simbolos;i++){
+  /*for (i=0;i<num_simbolos;i++){
         free(trans[i]);
-  }
+  }*/
 }
 
 
@@ -315,7 +315,7 @@ void funcion_probar(int num_simbolos, AFND* afnd, estructura* estru){
       printf("\n");
     }
   }
-  free(ag);
+  /*free(ag);*/
 }
 
 /*void funcion_probar(int num_estados_base, int num_simbolos, AFND* afnd, estructura* estru){
