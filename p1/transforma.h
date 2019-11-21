@@ -17,6 +17,10 @@ char* obtener_nombre(AFND * afnd, int* cod, int num_estados_base);
 int estado_existente(char* nombre, estructura* estru);
 int estado_fin(int* codificacion, estructura* estru);
 void estado_matriz(AFND * afnd, estructura* estru, int n_estado);
+estado** visitados(estructura *estru, AFND* afnd);
+AFND* actualizar_afnd(AFND* afnd, estructura *estru, estado** visitados);
+int* bfs(estado* est, int* vistos, AFND* afnd, estructura* estru);
+
 
 void funcion_probar(int num_simbolos, AFND* afnd, estructura* estru);
 

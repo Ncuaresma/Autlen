@@ -115,7 +115,14 @@ estado* get_estado_inicio(estructura* estru){
 }
 
 void cambiar_estado_inicio(estructura* estru, estado* new_estado_inicio){
+  int i;
   if (!estru || !new_estado_inicio) return;
+  for (i=0;i<estru->num_estados;i++){
+    if (get_tipo(estru->estados[i]) == INICIAL || get_tipo(estru->estados[i]) == INICIAL_Y_FINAL){
+      printf("Hay otrooo\n");
+    }
+  }
+  estru->estado_inicio = NULL;
   estru->estado_inicio = new_estado_inicio;
 }
 

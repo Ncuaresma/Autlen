@@ -8,6 +8,8 @@ AFND * AFNDTransforma(AFND * afnd){
   int num_simbolos;
   estructura* estru;
   int num_estados;
+  estado** estados_afd;
+  AFND * afd;
   int i;
   if(!afnd){
     printf("No hay autómata.\n");
@@ -26,11 +28,11 @@ AFND * AFNDTransforma(AFND * afnd){
 
   /*ver que el estado inicial tenga lambda y añadimos a la matriz el nuevo estado*/
   actualizar_ini(afnd, estru, num_simbolos, num_estados_base);
-
+  printf("NUEVOOOOOO%s\n", get_nombre(get_estado_inicio(estru)));
   /*Recorrer la matriz transicion y generar los estados nuevos combinados que hay*/
   /*meterlos en la matriz estos estados nuevos.*/
   num_estados = get_num_estados(estru);
-  for (i = 0; i < num_estados; i++){ 
+  for (i = 0; i < num_estados; i++){
       estado_matriz(afnd, estru, i);
     /* el numero de estados que tenemos ahora, por si ha añadido alguno mas*/
     num_estados = get_num_estados(estru);
@@ -46,9 +48,11 @@ AFND * AFNDTransforma(AFND * afnd){
   /*actualizar_automata(estru);*/
   /*MIERDA QUE HAY QUE BORRAR*/
   funcion_probar(num_simbolos, afnd, estru);
+  estados_afd = visitados(estru, afnd);
+  afd = actualizar_afnd(afnd, estru, estados_afd);
   /*Devuelvo esto para probar lo de imprimir matriz, luego habra que devolver el afnd resultante*/
   eliminar_estructura(estru);
-  return afnd;
+  return afd;
 }
 
 /*Saca los estados del autómata y los introduce en la estductura creada
@@ -201,6 +205,9 @@ void actualizar_ini(AFND * afnd, estructura* estru, int num_simbolos, int num_es
   if (tipo == INICIAL_Y_FINAL){
     add_estado_fin(estru, est);
   }
+  printf("estado inicio antes%s\n", get_nombre(get_estado_inicio(estru)));
+  cambiar_estado_inicio(estru, est);
+  printf("estado inicio despues%s\n", get_nombre(get_estado_inicio(estru)));
   estados_contiguos_generados(estru, est, num_simbolos, afnd);/*Añadimos el nuevo estado a la estructura.*/
   add_estado(estru, est);
   free(nombre);
@@ -318,22 +325,80 @@ void funcion_probar(int num_simbolos, AFND* afnd, estructura* estru){
   /*free(ag);*/
 }
 
-/*void funcion_probar(int num_estados_base, int num_simbolos, AFND* afnd, estructura* estru){
-  int i,j,k = 0;
-  int** ag;
-  ag = (int**)malloc(num_simbolos*sizeof(int*));
-  for (i = 0; i < num_estados_base; i++){
-    estado* estadito = get_estado_pos(estru, i);
-    printf("%d:\n", get_id(estadito));
-    for (j = 0; j < num_simbolos; j++){
-      ag[j] = (int*)malloc(num_estados_base*sizeof(int));
-    }
-    ag = get_transciones(estadito);
-    for (j = 0; j < num_simbolos; j++){
-      for (k = 0; k < num_estados_base; k++){
-        printf("%d\n", ag[j][k]);
-      }
-      printf("\n");
+estado** visitados(estructura *estru, AFND* afnd){
+  estado* estado_ini_fin=get_estado_inicio(estru);
+  int i;
+  int pos = 0;
+  int num_estados = get_num_estados(estru);
+  int* vistos = (int*)malloc(num_estados*sizeof(int));
+  estado** vecino = (estado**)malloc(num_estados*sizeof(estado*));
+  for (i = 0; i < num_estados; i++){
+    vistos[i] = 0;
+  }
+  vistos = bfs(estado_ini_fin, vistos, afnd, estru);
+  for(i = 0; i < num_estados; i++){
+    if(vistos[i]){
+      vecino[pos] = get_estado_pos(estru, i);
+      pos++;
     }
   }
-}*/
+  return vecino;
+}
+
+int* bfs(estado* est, int* vistos, AFND* afnd, estructura* estru){
+  int** trans;
+  int i;
+  int num_simbolos = AFNDNumSimbolos(afnd);
+  int num_estados_base = AFNDNumEstados(afnd);
+  estado* vecino=ini_estado(num_estados_base,num_simbolos);
+  trans = get_transciones(est);
+  vistos[get_id(est)] = 1;
+  for(i = 0; i < num_simbolos; i++){
+    if(strcmp("", obtener_nombre(afnd, trans[i], num_estados_base)) != 0){
+      vecino = get_estado_bynombre(estru, obtener_nombre(afnd, trans[i], num_estados_base));
+      if(vecino){
+        if(vistos[get_id(vecino)] == 0){
+          printf("Pos %d en matriz nueva\n", get_id(vecino));
+          bfs(vecino, vistos,  afnd, estru);
+        }
+      }
+    }
+  }
+return vistos;
+}
+
+AFND* actualizar_afnd(AFND* afnd, estructura *estru, estado** visitados){
+  AFND * afd;
+  char* nombre = (char*)malloc(get_num_estados_base(estru)*sizeof(char));
+  int** trans;
+  int num_visitados = 0;
+  int num_simbolos = get_num_simbolos(estru);
+  int i, j;
+  printf("NODOS VISITADOS: ");
+  while (visitados[num_visitados] != NULL){
+    printf("%s\n", get_nombre(visitados[num_visitados]));
+    num_visitados++;
+  }
+  /*Creamos el automata*/
+  afd = AFNDNuevo("afd", num_visitados, num_simbolos);
+  /*Insertamos estados*/
+  for(i = 0; i < num_visitados; i++){
+    AFNDInsertaEstado(afd, get_nombre(visitados[i]), get_tipo(visitados[i]));
+  }
+  /*Insertamos simbolos*/
+  for(i = 0; i < num_simbolos; i++){
+    /*Obtenemos los símbolos del autómata no determinista*/
+    AFNDInsertaSimbolo(afd, AFNDSimboloEn(afnd, i));
+  }
+
+  /*Insertar las transiciones entre los estados*/
+  for(i = 0; i < num_visitados; i++){
+    trans = get_transciones(visitados[i]);
+    for(j = 0; j < num_simbolos; j++){
+      nombre = obtener_nombre(afnd, trans[i], get_num_estados_base(estru));
+      AFNDInsertaTransicion(afd, get_nombre(visitados[i]),AFNDSimboloEn(afnd,j), nombre);
+    }
+  }
+  free(nombre);
+  return afd;
+}

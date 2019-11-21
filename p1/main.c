@@ -9,6 +9,7 @@ int main(int argc, char ** argv)
 {
 
 	AFND * p_afnd;
+	AFND * afd;
 
 	p_afnd= AFNDNuevo("af11", 6, 3);
 
@@ -41,12 +42,12 @@ int main(int argc, char ** argv)
 	AFNDADot(p_afnd);
 
 	/*Transformando el automata*/
-	AFNDTransforma(p_afnd);
+	afd = AFNDTransforma(p_afnd);
 
-	/* Imprimiendo el automata final
+	/* Imprimiendo el automata final*/
 	 AFNDImprime(stdout,afd);
-	Creando la imagen del automata final
-	AFNDADot(afd);*/
+	/*Creando la imagen del automata final*/
+	AFNDADot(afd);
 
 
 	/*AFNDElimina(afd);*/

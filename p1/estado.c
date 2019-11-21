@@ -13,7 +13,7 @@ struct _estado{
 
 /*inicializando valores del estado*/
 estado *ini_estado(int num_estados_base, int num_simbolos){
-  int i = 0;
+  int i,j = 0;
   estado* state;
   if (num_simbolos < 0 || num_estados_base < 0) return NULL;
   state = (estado*)malloc(sizeof(estado));
@@ -33,7 +33,7 @@ estado *ini_estado(int num_estados_base, int num_simbolos){
   }
   for (i=0;i<num_simbolos;i++){
 		state->transiciones[i] = (int*)malloc(state->num_estados_base*sizeof(int));
-    for(int j = 0; j < num_estados_base;j++){
+    for(j = 0; j < num_estados_base;j++){
       state->transiciones[i][j] = 0;
     }
     /*state->transiciones[i]=0;*/
