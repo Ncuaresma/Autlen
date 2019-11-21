@@ -15,7 +15,8 @@ struct _estructura{
 
 estructura* crear_estructura(int num_simbolos, int num_estados_base){
   int i = 0;
-  estructura* estru = (estructura*)malloc(sizeof(estructura));
+  estructura* estru = NULL;
+  estru = (estructura *)malloc(sizeof(estructura));
 
   if (num_simbolos < 0) return NULL;
   if (!estru) return NULL;
@@ -30,32 +31,18 @@ estructura* crear_estructura(int num_simbolos, int num_estados_base){
     free(estru);
     return NULL;
   }
-  for (i = 0; i < num_simbolos; i++){
-    estru->simbolos[i] = (char*)malloc(sizeof(char)*MAX_CHAR);
-    if (! estru->simbolos[i]){
-      free(estru->simbolos);
-      free(estru);
-      return NULL;
-    }
-  }
 
   estru->estados = (estado**)malloc(sizeof(estado*));
   if (! estru->estados){
     free(estru->simbolos);
-    for (i = 0; i < num_simbolos; i++){
-      free(estru->simbolos[i]);
-    }
     free(estru);
     return NULL;
   }
 
-  estru->estado_inicio = (estado*)malloc(sizeof(estru->estado_inicio));
+  estru->estado_inicio = ini_estado(estru->num_estados_base, estru->num_simbolos);
   if (! estru->estado_inicio){
     free(estru->estados);
     free(estru->simbolos);
-    for (i = 0; i < num_simbolos; i++){
-      free(estru->simbolos[i]);
-    }
     free(estru);
     return NULL;
   }
@@ -64,9 +51,6 @@ estructura* crear_estructura(int num_simbolos, int num_estados_base){
     free(estru->estado_inicio);
     free(estru->estados);
     free(estru->simbolos);
-    for (i = 0; i < num_simbolos; i++){
-      free(estru->simbolos[i]);
-    }
     free(estru);
     return NULL;
   }
@@ -86,7 +70,6 @@ char* get_simbolo_pos(estructura* estru, int pos){
 
 void add_simbolo(estructura* estru, char* new_simbolo){
   if (!estru || !new_simbolo) return;
-  estru->num_simbolos++;
   estru->simbolos = realloc(estru->simbolos, (estru->num_simbolos)*sizeof(char*));
   estru->simbolos[estru->num_simbolos-1] = (char*)malloc(sizeof(char)*MAX_CHAR);
   strcpy(estru->simbolos[estru->num_simbolos-1], new_simbolo);
@@ -160,14 +143,11 @@ int get_num_estados_base(estructura* estru){
 void eliminar_estructura(estructura* estru){
   int i = 0;
   if (!estru) return;
+  for (i=0;i<estru->num_finales;i++) eliminar_estado(estru->estados_fin[i]);
   free(estru->estados_fin);
   free(estru->estado_inicio);
   free(estru->estados);
-
   free(estru->simbolos);
-  for (i = 0; i < estru->num_simbolos; i++){
-    free(estru->simbolos[i]);
-  }
   free(estru);
 }
 

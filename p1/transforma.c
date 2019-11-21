@@ -7,7 +7,8 @@ AFND * AFNDTransforma(AFND * afnd){
   int num_estados_base;
   int num_simbolos;
   estructura* estru;
-
+  int num_estados;
+  int i;
   if(!afnd){
     printf("No hay autómata.\n");
     return NULL;
@@ -28,9 +29,14 @@ AFND * AFNDTransforma(AFND * afnd){
 
   /*Recorrer la matriz transicion y generar los estados nuevos combinados que hay*/
   /*meterlos en la matriz estos estados nuevos.*/
+  num_estados = get_num_estados(estru);
+  for (i = 0; i < num_estados; i++){
+    estado_matriz(afnd, estru, i);
+    /* el numero de estados que tenemos ahora, por si ha añadido alguno mas*/
+    num_estados = get_num_estados(estru);
+  }
 
-  /*estado_matriz(afnd, estru);*/
-  
+
   /*y hacer esto hasta que todos los estados nuevos que se vayan generando esten creados(bucle de lo que ya hay)*/
   /*desde el nuevo estado inicial ir recorriendo la matriz y hacer transiciones indicadas a estados indicados*/
   /*si desde un estado vas a dos vas metiendo en una pila los estado que has descubiertop y luego los exploras ((EDYL))jeje*/
@@ -41,6 +47,7 @@ AFND * AFNDTransforma(AFND * afnd){
   /*MIERDA QUE HAY QUE BORRAR*/
   funcion_probar(num_simbolos, afnd, estru);
   /*Devuelvo esto para probar lo de imprimir matriz, luego habra que devolver el afnd resultante*/
+  eliminar_estructura(estru);
   return afnd;
 }
 
@@ -201,7 +208,7 @@ void actualizar_ini(AFND * afnd, estructura* estru, int num_simbolos, int num_es
 
 char* obtener_nombre(AFND * afnd, int* cod, int num_estados_base){
   int i;
-  char* nombre = (char*)malloc(num_estados_base*sizeof(char));
+  char* nombre = (char*)malloc(2*num_estados_base*sizeof(char));
   strcpy(nombre,"");
   for (i = 0; i < num_estados_base; i++){
     if(cod[i]){
@@ -241,43 +248,46 @@ int estado_existente(char* nombre, estructura* estru){
 }
 
 /*ver que el estado inicial tenga lambda y añadimos a la matriz el nuevo estado*/
-void estado_matriz(AFND * afnd, estructura* estru){
-  int i,j;
-  int num_estados = get_num_estados(estru);
+void estado_matriz(AFND * afnd, estructura* estru, int n_estado){
+  int i;
   int num_simbolos = get_num_simbolos(estru);
   int num_estados_base = get_num_estados_base(estru);
   estado* est;
   int** trans;
+  /*Creo que no necesarioooooooooooooooooo*/
   char* nombre = (char*)malloc(MAX_CHAR*sizeof(char));
   int id = get_num_estados(estru);
   int tipo = NORMAL;
 
+  /*Puede que no se necesiteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee*/
   est = ini_estado(num_simbolos, num_estados_base);
-
+  /*y esto iguaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaal*/
   trans = (int**)malloc(num_simbolos*(sizeof(int*)));
   for (i=0;i<num_simbolos;i++){
         trans[i] = (int*)malloc(num_estados_base*sizeof(int));
   }
 
-  for (i = 0; i < num_estados; i++){
-    tipo = NORMAL;
-    est = get_estado_pos(estru, i);
-    trans = get_transciones(est);
-    for (j = 0; j < num_simbolos; j++){
-      nombre = obtener_nombre(afnd, trans[j], num_estados_base);
-      if(nombre){
-        if(!estado_existente(nombre, estru)){
-          if(estado_fin(trans[j], estru)){
-            tipo = FINAL;
-          }
-          est = crear_estado_combinado(nombre, tipo, num_simbolos, num_estados_base, id, trans[j]);
-          if(tipo == FINAL){
-            add_estado_fin(estru, est);
-          }
-          estados_contiguos_generados(estru, est, num_simbolos, afnd);/*Añadimos el nuevo estado a la estructura.*/
-          add_estado(estru, est);
-          id = get_num_estados(estru);
+  est = get_estado_pos(estru, n_estado);
+  /*Obtenemos las transiciones de ese estado para ver si va a algun estado nuevo*/
+  trans = get_transciones(est);
+  for (i = 0; i < num_simbolos; i++){
+    /*Creamos el nombre para ese estado para ver si existe*/
+    strcpy(nombre, "");
+    nombre = obtener_nombre(afnd, trans[i], num_estados_base);
+    if(nombre != NULL){
+      if(!estado_existente(nombre, estru)){
+        if(estado_fin(trans[i], estru)){
+          tipo = FINAL;
         }
+        est = crear_estado_combinado(nombre, tipo, num_simbolos, num_estados_base, id, trans[i]);
+        if(tipo == FINAL){
+          add_estado_fin(estru, est);
+        }
+        estados_contiguos_generados(estru, est, num_simbolos, afnd);/*Añadimos el nuevo estado a la estructura.*/
+        add_estado(estru, est);
+        /*Actualizamos el id*/
+        id = get_num_estados(estru);
+        free(nombre);
       }
     }
   }
@@ -285,6 +295,7 @@ void estado_matriz(AFND * afnd, estructura* estru){
         free(trans[i]);
   }
 }
+
 
 
 

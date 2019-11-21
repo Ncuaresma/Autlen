@@ -17,20 +17,22 @@ estado *ini_estado(int num_estados_base, int num_simbolos){
   estado* state;
   if (num_simbolos < 0 || num_estados_base < 0) return NULL;
   state = (estado*)malloc(sizeof(estado));
+  state->num_estados_base=num_estados_base;
+  state->num_simbolos=num_simbolos;
   if (!state) return NULL;
   state->nombre = (char*)malloc((sizeof(char))*MAX_CHAR);
   if(!state->nombre){
     free(state);
     return NULL;
   }
-  state->transiciones = (int **)malloc(num_simbolos*sizeof(int*));
+  state->transiciones = (int **)malloc(state->num_simbolos*sizeof(int*));
   if (!state->transiciones){
     free(state->nombre);
     free(state);
     return NULL;
   }
   for (i=0;i<num_simbolos;i++){
-		state->transiciones[i] = (int*)malloc(num_estados_base*sizeof(int));
+		state->transiciones[i] = (int*)malloc(state->num_estados_base*sizeof(int));
     if (!state->transiciones[i]){
       free(state->transiciones);
       free(state->nombre);
@@ -38,9 +40,9 @@ estado *ini_estado(int num_estados_base, int num_simbolos){
       return NULL;
     }
   }
-  state->codificacion = (int *)malloc(num_estados_base*sizeof(int));
+  state->codificacion = (int*)malloc(state->num_estados_base*sizeof(int));
   /*Ponemos por defecto todos los ids a 0*/
-  if (!state->codificacion){
+  /*if (!state->codificacion){
     for (i = 0; i < num_simbolos; i++){
       free(state->transiciones[i]);
     }
@@ -48,7 +50,7 @@ estado *ini_estado(int num_estados_base, int num_simbolos){
     free(state->nombre);
     free(state);
     return NULL;
-  }
+  }*/
   for (i = 0; i < num_estados_base; i++){
     state->codificacion[i] = 0;
   }
@@ -65,8 +67,6 @@ estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados_b
 
   state->id = id;
   state->codificacion[id] = 1;
-  state->num_estados_base = num_estados_base;
-  state->num_simbolos = num_simbolos;
   state->tipo = tipo;
   strcpy(state->nombre, nombre);
   return state;
@@ -137,6 +137,7 @@ void annadir_trans_comb(estado* estado, int* trans, int simbolo){
 void eliminar_estado(estado* estado){
   int i = 0;
   if(!estado) return;
+  free(estado->codificacion);
 	if(estado->nombre) free(estado->nombre);
 	for (i = 0; i < estado->num_simbolos; i++){
 		free(estado->transiciones[i]);

@@ -16,7 +16,7 @@ void estados_contiguos_generados(estructura* estru, estado* estado, int num_simb
 char* obtener_nombre(AFND * afnd, int* cod, int num_estados_base);
 int estado_existente(char* nombre, estructura* estru);
 int estado_fin(int* codificacion, estructura* estru);
-void estado_matriz(AFND * afnd, estructura* estru);
+void estado_matriz(AFND * afnd, estructura* estru, int n_estado);
 
 void funcion_probar(int num_simbolos, AFND* afnd, estructura* estru);
 
