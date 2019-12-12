@@ -156,7 +156,7 @@ void actualizar_ini(AFND * afnd, estructura* estru, int num_simbolos, int num_es
   int i;
   estado* est;
   int* codificacion;
-  char* nombre = (char*)malloc(num_estados_base*sizeof(char));
+  char* nombre = (char*)malloc(MAX_CHAR*sizeof(char));
   int n_est;
   int id = get_num_estados(estru);
   int tipo = INICIAL;
@@ -189,7 +189,7 @@ void actualizar_ini(AFND * afnd, estructura* estru, int num_simbolos, int num_es
 
 char* obtener_nombre(AFND * afnd, int* cod, int num_estados_base){
   int i;
-  char* nombre = (char*)malloc(2*num_estados_base*sizeof(char));
+  char* nombre = (char*)malloc(MAX_CHAR*sizeof(char));
   strcpy(nombre,"");
   for (i = 0; i < num_estados_base; i++){
     if(cod[i]){
@@ -310,7 +310,7 @@ return vistos;
 
 AFND* actualizar_afnd(AFND* afnd, estructura *estru, estado** visitados){
   AFND * afd;
-  char* nombre = (char*)malloc(get_num_estados_base(estru)*sizeof(char));
+  char* nombre = (char*)malloc(MAX_CHAR*sizeof(char));
   int** trans;
   int num_visitados = 0;
   int num_simbolos = get_num_simbolos(estru);

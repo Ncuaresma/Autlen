@@ -29,6 +29,7 @@ int main(int argc, char ** argv)
 	AFNDInsertaTransicion(p_afnd, "q1", "0", "q4");
 	AFNDInsertaTransicion(p_afnd, "q1", ".", "q2");
 	AFNDInsertaTransicion(p_afnd, "q2", "0", "q3");
+	AFNDInsertaTransicion(p_afnd, "q3", "0", "q2");
 	AFNDInsertaTransicion(p_afnd, "q3", "0", "q3");
 	AFNDInsertaTransicion(p_afnd, "q4", ".", "q3");
 
