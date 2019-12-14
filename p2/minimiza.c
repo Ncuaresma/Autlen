@@ -153,5 +153,16 @@ int** marcar_finales(int* visitados, int** matriz, int* finales, int tam_matriz,
 
 /*Marca el resto de estados distinguiendo en clases -- recursiva*/
 int** marcar(int* visitados, int** matriz, int n){
+  int i;
+  int estado;
 
+  for(i = 0; i < n; i++){
+    estado = visitados[i];
+    /*vemos las combinaciones con los diferentes estados*/
+    equivalentes(estado, visitados, n);
+  }
+}
+
+void equivalentes(estado, visitados, n){
+  
 }
