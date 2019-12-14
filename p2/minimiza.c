@@ -116,7 +116,7 @@ int** estados_equivalentes(int* visitados, AFND* afnd, int** matriz, int n){
 
   /*Busqueda de equivalentes por transiciones*/
   for (i = 0; i < estados_fin; i++){
-    matriz = marcar(visitados, matriz, n, i);
+    matriz = marcar(visitados, matriz, n);
   }
 
   free(finales);
@@ -164,5 +164,5 @@ int** marcar(int* visitados, int** matriz, int n){
 }
 
 void equivalentes(estado, visitados, n){
-  
+
 }
