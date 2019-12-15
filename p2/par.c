@@ -24,7 +24,7 @@ par* ini_par(int id1, int id2){
 }
 
 /* añade un nuevo par a la lista de asociados */
-void aniadir_par(par* par){
+void aniadir_asociado(par* par){
   if(!par) return NULL;
   par->n_asoc++;
   par->asociados = realloc(par->asociados, (par->n_asoc)*sizeof(par*));
@@ -34,4 +34,18 @@ void aniadir_par(par* par){
 par** get_asociados(par* par){
   if(!par) return NULL;
   return par->asociados;
+}
+
+/*Elimina par de la lista de sociados*/
+void eliminar_asociado(){
+
+}
+
+/*Elimina la estructura par*/
+void eliminar_par(par* par){
+  int i;
+  for (i = 0; i < n_asoc; i++){
+    free(par->asociados[i]);
+  }
+  free(par->asociados);
 }
