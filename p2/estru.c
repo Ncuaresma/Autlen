@@ -83,6 +83,6 @@ int get_num_accesibles(estru* estru){
   return estru->num_accesibles;
 }
 
-void marcar(par* par, estru* estru, int pos1, int pos2){
+void marcar_matriz(estru* estru, int pos1, int pos2){
   estru->matrz[pos2-1][pos1] = 1;
 }

@@ -11,7 +11,7 @@ struct _par{
 
 /*inicializando valores del par*/
 par* ini_par(int id1, int id2){
-  if(id1 > id2) return NULL; // --> mjor ponerla en la otra
+  if(id1 > id2) return NULL;¡
   par* par;
   par = (par*)malloc(sizeof(par));
   par->id1 = id1;
