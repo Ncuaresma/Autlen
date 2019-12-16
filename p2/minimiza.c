@@ -201,11 +201,14 @@ estru* equivalentes(AFND* afd, estru* estru_nueva, int estado, int pos, int* vis
 
 void pares_asociados(estru* estru_nueva, par* par_nuevo, int estado1, int estado2, int pos, int i, int* visitados){
   /*int num_accesibles = get_num_accesibles(estru);*/
-  par* par_asoc = NULL;
+  par* par_asoc;
+
+  if (!estru_nueva || !par_nuevo || !visitados) return;
   /* Si uno no tiene transicion y otro si*/
   if((estado1 == -1 && estado2 != -1) || (estado1 != -1 && estado2 == -1)){
     marcar(par_nuevo, estru_nueva, pos, i, visitados);
   }
+
   /* Si el par asociado existe y no equivalente*/
   par_asoc = buscar_par(estado1, estado2, estru_nueva);
   if (par_asoc != NULL){
@@ -222,7 +225,7 @@ void pares_asociados(estru* estru_nueva, par* par_nuevo, int estado1, int estado
     aniadir_par(estru_nueva, par_asoc);
     aniadir_par_asociado(estru_nueva, par_asoc, par_nuevo);
   }
-  eliminar_par(par_asoc);
+  /*eliminar_par(par_asoc);*/
 }
 
 void marcar(par* par_nuevo, estru* estru_nueva, int pos1, int pos2, int* visitados){
@@ -236,14 +239,18 @@ void marcar(par* par_nuevo, estru* estru_nueva, int pos1, int pos2, int* visitad
   for(i = 0; i < num_asoc; i++){
     for(j = 0; j < num_accesibles; j++){
       asociado = get_asociados(par_nuevo)[i];
-      id1 = get_id1(asociado);
-      id2 = get_id2(asociado);
-      if(visitados[j] == id1){
-        pos1_asoc = j;
-      }else if(visitados[j] == id2){
-        pos2_asoc = j;
+      if (asociado != NULL){
+        printf("\n\nholii %d\n\n", j);
+        id1 = get_id1(asociado);
+        id2 = get_id2(asociado);
+        if(visitados[j] == id1){
+          pos1_asoc = j;
+        }else if(visitados[j] == id2){
+          pos2_asoc = j;
+        }
+        marcar(asociado, estru_nueva, pos1_asoc, pos2_asoc, visitados);
       }
-      marcar(asociado, estru_nueva, pos1_asoc, pos2_asoc, visitados);
+      else printf("\n\nvaya miwrda\n\n");
     }
   }
 

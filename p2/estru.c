@@ -52,9 +52,13 @@ void aniadir_par(estru* estru_nueva, par* par_nuevo){
 par* buscar_par(int id1, int id2, estru* estru_nueva){
   int i;
   if (!estru_nueva || id1 < 0 || id2 < 0) return NULL;
-  for(i = 0; i < estru_nueva->num_pares; i++){
-    if(id1 == get_id1(estru_nueva->pares[i]) && id2 == get_id2(estru_nueva->pares[i])){
-      return estru_nueva->pares[i];
+  printf("\n%d\n", estru_nueva->num_pares);
+  for(i = 0; i < (estru_nueva->num_pares-1); i++){
+    printf("\nhellowiii\n\n");
+    if (estru_nueva->pares[i] != NULL){
+      if(id1 == get_id1(estru_nueva->pares[i]) && id2 == get_id2(estru_nueva->pares[i])){
+        return estru_nueva->pares[i];
+      }
     }
   }
   return NULL;
@@ -86,6 +90,6 @@ int get_num_accesibles(estru* estru_nueva){
 }
 
 void marcar_matriz(estru* estru_nueva, int pos1, int pos2){
-  if (!estru_nueva) return;
+  if (!estru_nueva || pos1 < 0 || pos2 < 0) return;
   estru_nueva->matriz[pos2-1][pos1] = 1;
 }

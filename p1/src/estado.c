@@ -33,7 +33,7 @@ estado *ini_estado(int num_estados_base, int num_simbolos){
   }
   for (i=0;i<num_simbolos;i++){
 		state->transiciones[i] = (int*)malloc(state->num_estados_base*sizeof(int));
-    for(j = 0; j < num_estados_base;j++){
+    for(j = 0; j < num_estados_base; j++){
       state->transiciones[i][j] = 0;
     }
     if (!state->transiciones[i]){
@@ -43,8 +43,8 @@ estado *ini_estado(int num_estados_base, int num_simbolos){
       return NULL;
     }
   }
-  state->codificacion = (int*)malloc(state->num_estados_base*sizeof(int));
-  for (i = 0; i < num_estados_base; i++){
+  state->codificacion = (int*)malloc((state->num_estados_base)*sizeof(int));
+  for (i = 0; i < state->num_estados_base; i++){
     state->codificacion[i] = 0;
   }
   return state;
@@ -69,6 +69,7 @@ estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados_b
 
 estado* crear_estado_combinado(char* nombre, int tipo, int num_simbolos, int num_estados_base, int id, int* codificacion){
   estado* state;
+  int nom;
   if (!nombre) return NULL;
   if (tipo > 3 || tipo < 0) return NULL;
   if (num_simbolos < 0 || num_estados_base < 0) return NULL;
@@ -80,7 +81,8 @@ estado* crear_estado_combinado(char* nombre, int tipo, int num_simbolos, int num
   state->num_estados_base = num_estados_base;
   state->num_simbolos = num_simbolos;
   state->tipo = tipo;
-  strcpy(state->nombre, nombre);
+  nom = sizeof(nombre);
+  memmove(state->nombre, nombre, nom);
   return state;
 }
 
@@ -90,7 +92,8 @@ char* get_nombre(estado* estado){
 }
 
 void set_nombre_estado(estado * estado, char *nombre){
-  strcpy(estado->nombre, nombre);
+  int nom = sizeof(nombre);
+  memmove(estado->nombre, nombre, nom);
 }
 
 int* get_codificacion(estado* estado){
@@ -131,13 +134,12 @@ void annadir_trans_comb(estado* estado, int* trans, int simbolo){
 }
 
 void eliminar_estado(estado* estado){
-  int i = 0;
-  if(!estado) return;
+  int i;
   free(estado->codificacion);
-	if(estado->nombre) free(estado->nombre);
-	for (i = 0; i < estado->num_simbolos; i++){
-		free(estado->transiciones[i]);
-	}
-	free(estado->transiciones);
+  free(estado->nombre);
+  for (i = 0; i < estado->num_simbolos; i++){
+    free(estado->transiciones[i]);
+  }
+  free(estado->transiciones);
 	free(estado);
 }
