@@ -52,6 +52,7 @@ estado *ini_estado(int num_estados_base, int num_simbolos){
 
 estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados_base, int id){
   estado* state;
+  int nom = 0;
   if (!nombre) return NULL;
   if (tipo > 3 || tipo < 0) return NULL;
   if (num_simbolos < 0 || num_estados_base < 0) return NULL;
@@ -61,7 +62,8 @@ estado* crear_estado(char* nombre, int tipo, int num_simbolos, int num_estados_b
   state->id = id;
   state->codificacion[id] = 1;
   state->tipo = tipo;
-  strcpy(state->nombre, nombre);
+  nom = sizeof(nombre);
+  memmove(state->nombre, nombre, nom);
   return state;
 }
 

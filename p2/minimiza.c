@@ -9,7 +9,7 @@ AFND * AFNDMinimiza(AFND* afd){
   int estado_ini = AFNDIndiceEstadoInicial(afd);
   int i;
   int num_accesibles = 0;
-  estru* estru;
+  estru* estru_nueva;
   if(!afd){
     printf("No hay autómata.\n");
     return NULL;
@@ -32,16 +32,16 @@ AFND * AFNDMinimiza(AFND* afd){
   printf("\nHay %d estados accesibles de %d\n", num_accesibles, num_estados);
 
   /*Inicializamos la lista de estados, la matriz con todos los valores a cero (solo con estados accesibles)*/
-  estru = ini_estru(num_accesibles);
+  estru_nueva = ini_estru(num_accesibles);
 
   /*Cargamos la matriz con el algoritmo propuesto en clase*/
-  estru = estados_equivalentes(afd, visitados, estru);
+  estru_nueva = estados_equivalentes(afd, visitados, estru_nueva);
 
 
   /*Liberamos memoria final*/
   free(vistos);
   free(visitados);
-  eliminar_estru(estru);
+  eliminar_estru(estru_nueva);
   return NULL;
 }
 
@@ -136,49 +136,51 @@ int** marcar_finales(int* visitados, int** matriz, int* finales, int tam_matriz,
 }
 
 /*Marca el resto de estados distinguiendo en clases -- recursiva*/
-estru* estados_equivalentes(AFND* afd, int* visitados, estru* estru){
+estru* estados_equivalentes(AFND* afd, int* visitados, estru* estru_nueva){
   int i;
   int estado;
-  int num_accesibles = get_num_accesibles(estru);
+  int num_accesibles = get_num_accesibles(estru_nueva);
 
   /*Para cada estado comprobamos con pares si es equivalente con los siguientes a el*/
   for(i = 0; i < num_accesibles; i++){
     estado = visitados[i];
-    estru = equivalentes(afd, estru, estado, i, visitados);
+    estru_nueva = equivalentes(afd, estru_nueva, estado, i, visitados);
   }
-  return estru;
+  return estru_nueva;
 }
 
-estru* equivalentes(AFND* afd, estru* estru, int estado, int pos, int* visitados){
+estru* equivalentes(AFND* afd, estru* estru_nueva, int estado, int pos, int* visitados){
   int i, simbol, k;
-  int estado1 = -1;
-  int estado2 = -1;
+  int estado1;
+  int estado2;
   int num_simbolos = AFNDNumSimbolos(afd);
-  int num_accesibles = get_num_accesibles(estru);
-  par* par;
+  int num_accesibles = get_num_accesibles(estru_nueva);
+  par* par_nuevo = NULL;
 
   /* Combinaciones de pares con los que cada estado se comprueba*/
   for(i = pos+1; i < num_accesibles; i++){
-    par = buscar_par(estado, visitados[i], estru);
-    if (par == NULL){
-      par = ini_par(estado, visitados[i]);
-      aniadir_par(estru, par);
+    par_nuevo = buscar_par(estado, visitados[i], estru_nueva);
+    if (par_nuevo == NULL){
+      par_nuevo = ini_par(estado, visitados[i]);
+      aniadir_par(estru_nueva, par_nuevo);
     }
     /*Comprobamos si alguno de los dos es final y el otro no*/
     if(AFNDTipoEstadoEn(afd, estado) == FINAL || AFNDTipoEstadoEn(afd, estado) == INICIAL_Y_FINAL){
       if (AFNDTipoEstadoEn(afd, visitados[i]) != FINAL && AFNDTipoEstadoEn(afd, visitados[i]) != INICIAL_Y_FINAL){
-          marcar(par, estru, pos, i, visitados);
+          marcar(par_nuevo, estru_nueva, pos, i, visitados);
       }
     }
     if(AFNDTipoEstadoEn(afd, visitados[i]) == FINAL || AFNDTipoEstadoEn(afd, visitados[i]) == INICIAL_Y_FINAL){
       if (AFNDTipoEstadoEn(afd, estado) != FINAL && AFNDTipoEstadoEn(afd, estado) != INICIAL_Y_FINAL){
-          marcar(par, estru, pos, i, visitados);
+          marcar(par_nuevo, estru_nueva, pos, i, visitados);
       }
     }
     /* Con cada simbolo a que estado voy*/
     for(simbol = 0; simbol < num_simbolos; simbol++){
+      estado1 = -1;
+      estado2 = -1;
       /* Vemos a donde van cada uno de los estados de par con cada simbolo*/
-      for (k = 0; k < n; k++){
+      for (k = 0; k < num_accesibles; k++){
         if(AFNDTransicionIndicesEstadoiSimboloEstadof(afd, estado, simbol, visitados[k])){
           estado1 = visitados[k];
         }
@@ -187,60 +189,61 @@ estru* equivalentes(AFND* afd, estru* estru, int estado, int pos, int* visitados
         }
       }
       if(estado1 < estado2){
-        pares_asociados(estru, par, estado1, estado2, pos, i, visitados);
+        pares_asociados(estru_nueva, par_nuevo, estado1, estado2, pos, i, visitados);
       }else{
-        pares_asociados(estru, par, estado2, estado1, pos, i, visitados);
+        pares_asociados(estru_nueva, par_nuevo, estado2, estado1, pos, i, visitados);
       }
     }
   }
-  return estru;
+  return estru_nueva;
 }
 
 
-pares_asociados(estru* estru, par* par, int estado1, int estado2, int pos, int i, int* visitados){
-  int num_accesibles = get_num_accesibles(estru);
-
+void pares_asociados(estru* estru_nueva, par* par_nuevo, int estado1, int estado2, int pos, int i, int* visitados){
+  /*int num_accesibles = get_num_accesibles(estru);*/
+  par* par_asoc = NULL;
   /* Si uno no tiene transicion y otro si*/
   if((estado1 == -1 && estado2 != -1) || (estado1 != -1 && estado2 == -1)){
-    marcar(par, estru, pos, i, visitados);
+    marcar(par_nuevo, estru_nueva, pos, i, visitados);
   }
   /* Si el par asociado existe y no equivalente*/
-  par_asoc = buscar_par(estado1, estado2, estru);
+  par_asoc = buscar_par(estado1, estado2, estru_nueva);
   if (par_asoc != NULL){
     /* Si el par asociado no es equivalente entonces tampoco el que llega a ellos*/
     if(get_equivalente(par_asoc) == 1){
-        marcar(par, estru, pos, i, visitados);
+        marcar(par_nuevo, estru_nueva, pos, i, visitados);
     }else{
       /* si son equivalentes el que llega a ellos tambien, pero se une a su lista de dependencia, por si cambia la equivalencia*/
-      aniadir_par_asociado(estru, par_asoc, par);
+      aniadir_par_asociado(estru_nueva, par_asoc, par_nuevo);
     }
   }else{
     /*Si no existe el par lo creo y añado a su lista de asociacion el par*/
     par_asoc = ini_par(estado1, estado2);
-    aniadir_par(estru, par_asoc);
-    aniadir_par_asociado(estru, par_asoc, par);
+    aniadir_par(estru_nueva, par_asoc);
+    aniadir_par_asociado(estru_nueva, par_asoc, par_nuevo);
   }
+  eliminar_par(par_asoc);
 }
 
-marcar(par* par, estru* estru, int pos1, int pos2, int* visitados){
-  int i,j, id1, id2, pos1, pos2;
-  int num_accesibles = get_num_accesibles(estru);
-  int num_asoc = get_n_asoc(par);
-  par* asociado = (par*)malloc(sizeof(par));
+void marcar(par* par_nuevo, estru* estru_nueva, int pos1, int pos2, int* visitados){
+  int i,j, id1, id2, pos1_asoc, pos2_asoc;
+  int num_accesibles = get_num_accesibles(estru_nueva);
+  int num_asoc = get_n_asoc(par_nuevo);
+  par* asociado = NULL;
 
-  set_par_equivalente(estru, par, 1);
-  marcar_matriz(estru, pos1, pos2);
+  set_par_equivalente(estru_nueva, par_nuevo, 1);
+  marcar_matriz(estru_nueva, pos1, pos2);
   for(i = 0; i < num_asoc; i++){
     for(j = 0; j < num_accesibles; j++){
-      asociado = get_asociados(par)[i];
+      asociado = get_asociados(par_nuevo)[i];
       id1 = get_id1(asociado);
       id2 = get_id2(asociado);
       if(visitados[j] == id1){
-        pos1 = j;
+        pos1_asoc = j;
       }else if(visitados[j] == id2){
-        pos2 = j;
+        pos2_asoc = j;
       }
-      marcar(estru, pos1, pos2, num_accesibles, visitados);
+      marcar(asociado, estru_nueva, pos1_asoc, pos2_asoc, visitados);
     }
   }
 

@@ -11,59 +11,68 @@ struct _par{
 
 /*inicializando valores del par*/
 par* ini_par(int id1, int id2){
-  if(id1 > id2) return NULL;¡
-  par* par;
-  par = (par*)malloc(sizeof(par));
-  par->id1 = id1;
-  par->id2 = id2;
-  par->n_asoc = 0;
-  par->asociados = NULL;
-  par->equivalente = 0;
+  par* par_nuevo;
+  if (id1 < 0 || id2 < 0) return NULL;
+  if(id1 > id2) return NULL;
 
-  if(!par) return NULL;
+  par_nuevo = (par*)malloc(sizeof(par));
+  par_nuevo->id1 = id1;
+  par_nuevo->id2 = id2;
+  par_nuevo->n_asoc = 0;
+  par_nuevo->asociados = NULL;
+  par_nuevo->equivalente = 0;
 
-  return par;
+  if(!par_nuevo) return NULL;
+
+  return par_nuevo;
 }
 
 /* añade un nuevo par a la lista de asociados */
-void aniadir_asociado(par* yo, par* par){
-  if(!par || !yo) return NULL;
+void aniadir_asociado(par* yo, par* par_nuevo){
+  if(!par_nuevo || !yo) return;
   yo->n_asoc++;
   yo->asociados = realloc(yo->asociados, (yo->n_asoc)*sizeof(par*));
-  yo->asociados[yo->n_asoc-1] = par;
+  yo->asociados[yo->n_asoc-1] = par_nuevo;
 }
 
-int get_n_asoc(par* par){
-  return par->n_asoc;
+int get_n_asoc(par* par_nuevo){
+  if (!par_nuevo) return -1;
+  return par_nuevo->n_asoc;
 }
 
-par** get_asociados(par* par){
-  if(!par) return NULL;
-  return par->asociados;
+par** get_asociados(par* par_nuevo){
+  if(!par_nuevo) return NULL;
+  return par_nuevo->asociados;
 }
 
 /*Elimina la estructura par*/
-void eliminar_par(par* par){
+void eliminar_par(par* par_nuevo){
   int i;
-  for (i = 0; i < n_asoc; i++){
-    free(par->asociados[i]);
+  if (!par_nuevo || par_nuevo->asociados == NULL) return;
+  for (i = 0; i < par_nuevo->n_asoc; i++){
+    free(par_nuevo->asociados[i]);
   }
-  free(par->asociados);
+  free(par_nuevo->asociados);
 }
 
-void set_equivalente(par* par, int i){
-  if (i != 0 || i != 1){
+void set_equivalente(par* par_nuevo, int i){
+  if (i != 0 || i != 1 ||!par_nuevo){
     return;
   }
-    par->equivalente = i;
-}
-int get_equivalente(par* par){
-  return par->equivalente;
+    par_nuevo->equivalente = i;
 }
 
-int get_id1(par* par){
-  return par->id1;
+int get_equivalente(par* par_nuevo){
+  if (!par_nuevo) return -1;
+  return par_nuevo->equivalente;
 }
-int get_id2(par* par){
-  return par->id2;
+
+int get_id1(par* par_nuevo){
+  if (!par_nuevo) return -1;
+  return par_nuevo->id1;
+}
+
+int get_id2(par* par_nuevo){
+  if (!par_nuevo) return -1;
+  return par_nuevo->id2;
 }
