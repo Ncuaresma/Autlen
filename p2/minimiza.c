@@ -31,6 +31,9 @@ AFND * AFNDMinimiza(AFND* afd){
     }
   }
   printf("\nHay %d estados accesibles de %d\n", num_accesibles, num_estados);
+  for (i = 0; i < num_accesibles; i++){
+    printf("%d ", visitados[i]);
+  }
 
   /*Inicializamos la lista de estados, la matriz con todos los valores a cero (solo con estados accesibles)*/
   estru_nueva = ini_estru(num_accesibles);
