@@ -64,13 +64,11 @@ int main(int argc, char ** argv){
   AFNDADot(p_afnd);
   p_afnd_min = AFNDMinimiza(p_afnd);
 
-  /*
   AFNDADot(p_afnd_min);
-  AFNDImprime(stdout,p_afnd_min);
-*/
+  /*AFNDImprime(stdout,p_afnd_min);*/
 
   AFNDElimina(p_afnd);
   AFNDElimina(p_afnd_min);
-
+  printf("\n");
   return 0;
 }

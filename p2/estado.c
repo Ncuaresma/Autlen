@@ -35,9 +35,13 @@ estado* crear_estado(int num_simbolos, int num_estados, char* nombre, int pos, i
 }
 
 void add_estado(estado* state, char* nombre, int pos, int tipo){
-  if (tipo > state->tipo){
+  if (tipo != NORMAL && state->tipo == NORMAL){
     state->tipo = tipo;
   }
+  if (tipo == INICIAL_Y_FINAL && (state->tipo == FINAL  || state->tipo == INICIAL)){
+    state->tipo = tipo;
+  }
+
   state->codificacion_mia[pos] = 1;
   strcat(state->nombre, nombre);
 }
@@ -52,4 +56,12 @@ void set_transiciones_sim_est(estado* state, int sim, int est){
 
 int** get_transiciones(estado* state){
   return state->transiciones;
+}
+
+int get_tipo_estado(estado* state){
+  return state->tipo;
+}
+
+int* get_codificacion_mia(estado* state){
+  return state->codificacion_mia;
 }

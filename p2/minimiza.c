@@ -38,10 +38,10 @@ AFND * AFNDMinimiza(AFND* afd){
   /*Cargamos la matriz con el algoritmo propuesto en clase*/
   estru_nueva = estados_equivalentes(afd, visitados, estru_nueva);
 
-  imprimir_matriz(estru_nueva);
+  /*imprimir_matriz(estru_nueva);*/
 
   /*recorrer la matriz para sacar los estados equivalentes*/
-  nuevos_estados(estru_nueva,afd, visitados);
+  p_afnd_min = nuevos_estados(estru_nueva,afd, visitados);
   /*Crear el afd*/
   /*p_afnd_min = crear_automata(estru_nueva, afd);*/
 
@@ -49,7 +49,7 @@ AFND * AFNDMinimiza(AFND* afd){
   free(vistos);
   free(visitados);
   eliminar_estru(estru_nueva);
-  return NULL;
+  return p_afnd_min;
 }
 
 /*Busqueda en anchura para obtener todos los estados accesibles*/
@@ -278,7 +278,7 @@ void marcar(par* par_nuevo, estru* estru_nueva, int pos1, int pos2, int* visitad
   }
 }
 
-void nuevos_estados(estru* estru_nueva, AFND* afd, int* visitados){
+AFND* nuevos_estados(estru* estru_nueva, AFND* afd, int* visitados){
   int i, j, k;
   int nom;
   int ya = 0;
@@ -290,6 +290,7 @@ void nuevos_estados(estru* estru_nueva, AFND* afd, int* visitados){
   estado** estados_nuevos = NULL; /*Array con los nuevos estados*/
   estado* state_nuevo = NULL;
   int tam_matriz = get_num_accesibles(estru_nueva);
+
   for (i = 0; i < tam_matriz; i++){
     for (j = 0; j < tam_matriz; j++){
       if (get_matriz(estru_nueva)[i][j] == 0){
@@ -330,7 +331,7 @@ void nuevos_estados(estru* estru_nueva, AFND* afd, int* visitados){
     ya = 0;
     creado = 0;
   }
-  /*ESTOP SE BORRA*/
+  /*ESTO SE BORRA --> funcionaaaaa*/
   for (k = 0; k < estados; k++){
     for(i = 0; i < num_estados; i++){
       for(j = 0; j < num_simbolos; j++){
@@ -340,6 +341,7 @@ void nuevos_estados(estru* estru_nueva, AFND* afd, int* visitados){
     }
     printf("\n");
   }
+  return automata_fin(afd,estados_nuevos, estados);
 }
 
 void aniadir_trasicion(estado* state_nuevo, AFND* afnd, int estado, int num_estados, int num_simbolos){
@@ -351,4 +353,34 @@ void aniadir_trasicion(estado* state_nuevo, AFND* afnd, int estado, int num_esta
       }
     }
   }
+}
+
+AFND* automata_fin(AFND* afnd, estado** estados_nuevos, int estados){
+  int i, j, k, l;
+  int mismo = 0;
+  int num_simbolos = AFNDNumSimbolos(afnd);
+  int estados_totales = AFNDNumEstados(afnd);
+  AFND * p_afnd_min = AFNDNuevo("af1_min", estados, num_simbolos);
+  for (i = 0; i < estados; i++){
+    AFNDInsertaEstado(p_afnd_min, get_nombre_estado(estados_nuevos[i]), get_tipo_estado(estados_nuevos[i]));
+  }
+  for (i = 0; i < num_simbolos; i++){
+    AFNDInsertaSimbolo(p_afnd_min,AFNDSimboloEn(afnd, i));
+  }
+  for (i = 0; i < estados; i++){
+    for (j = 0; j < estados; j++){
+      for (k = 0; k < num_simbolos; k++){
+        mismo = 0;
+        for (l = 0; l < estados_totales; l++){
+          if (get_transiciones(estados_nuevos[i])[k][l] == get_codificacion_mia(estados_nuevos[j])[l]){
+            mismo ++;
+          }
+        }
+        if (mismo == estados_totales){
+          AFNDInsertaTransicion(p_afnd_min, get_nombre_estado(estados_nuevos[i]), AFNDSimboloEn(p_afnd_min,k), get_nombre_estado(estados_nuevos[j]));
+        }
+      }
+    }
+  }
+  return p_afnd_min;
 }
