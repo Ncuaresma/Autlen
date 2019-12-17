@@ -38,6 +38,11 @@ AFND * AFNDMinimiza(AFND* afd){
   estru_nueva = estados_equivalentes(afd, visitados, estru_nueva);
 
   imprimir_matriz(estru_nueva);
+
+  /*recorrer la matriz para sacar los estados equivalentes*/
+  
+  /*Crear el afd*/
+
   /*Liberamos memoria final*/
   free(vistos);
   free(visitados);
