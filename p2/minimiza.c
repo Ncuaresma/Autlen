@@ -10,6 +10,7 @@ AFND * AFNDMinimiza(AFND* afd){
   int i;
   int num_accesibles = 0;
   estru* estru_nueva;
+  AFND * p_afnd_min;
   if(!afd){
     printf("No hay autómata.\n");
     return NULL;
@@ -20,7 +21,7 @@ AFND * AFNDMinimiza(AFND* afd){
   }
   /*Buscamos los estados que necesitamos para el AFD mediante busqueda en anchura*/
   vistos = bfs(estado_ini, num_simbolos, num_estados, vistos, afd);
-  printf("\nVistosss\n");
+  printf("\n\nVistos\n");
   for (i = 0; i < num_estados; i++){
     printf("%d ", vistos[i]);
     if (vistos[i] == 1){
@@ -40,8 +41,9 @@ AFND * AFNDMinimiza(AFND* afd){
   imprimir_matriz(estru_nueva);
 
   /*recorrer la matriz para sacar los estados equivalentes*/
-  
+  nuevos_estados(estru_nueva,afd, visitados);
   /*Crear el afd*/
+  /*p_afnd_min = crear_automata(estru_nueva, afd);*/
 
   /*Liberamos memoria final*/
   free(vistos);
@@ -258,7 +260,6 @@ void marcar(par* par_nuevo, estru* estru_nueva, int pos1, int pos2, int* visitad
 
   set_par_equivalente(estru_nueva, par_nuevo, 1);
   marcar_matriz(estru_nueva, pos1, pos2);
-  printf("%d, %d, marcaaar %d\n", pos1, pos2, get_equivalente(par_nuevo));
   for(i = 0; i < num_asoc; i++){
     asociado = get_asociados(par_nuevo)[i];
     if (asociado != NULL && get_equivalente(asociado) == 0){
@@ -273,6 +274,81 @@ void marcar(par* par_nuevo, estru* estru_nueva, int pos1, int pos2, int* visitad
         }
       }
       marcar(asociado, estru_nueva, pos1_asoc, pos2_asoc, visitados);
+    }
+  }
+}
+
+void nuevos_estados(estru* estru_nueva, AFND* afd, int* visitados){
+  int i, j, k;
+  int nom;
+  int ya = 0;
+  int creado = 0;
+  char nombre_estado[MAX_CHAR];
+  int estados = 0;
+  int num_simbolos = AFNDNumSimbolos(afd);
+  int num_estados = AFNDNumEstados(afd);
+  estado** estados_nuevos = NULL; /*Array con los nuevos estados*/
+  estado* state_nuevo = NULL;
+  int tam_matriz = get_num_accesibles(estru_nueva);
+  for (i = 0; i < tam_matriz; i++){
+    for (j = 0; j < tam_matriz; j++){
+      if (get_matriz(estru_nueva)[i][j] == 0){
+        nom = sizeof(AFNDNombreEstadoEn(afd, visitados[j]));
+        memmove(nombre_estado, AFNDNombreEstadoEn(afd, visitados[j]), nom);
+        if(strcmp(nombre_estado, "") != 0){
+          if (creado == 0){
+            /*creamos estado*/
+            state_nuevo = crear_estado(num_simbolos, num_estados, nombre_estado, visitados[j], AFNDTipoEstadoEn(afd, visitados[j]));
+            creado = 1;
+          }
+          else{
+            /*añadimos al creado*/
+            add_estado(state_nuevo, nombre_estado, visitados[j], AFNDTipoEstadoEn(afd, visitados[j]));
+          }
+          aniadir_trasicion(state_nuevo, afd, visitados[j], num_estados, num_simbolos);
+        }
+        nom = sizeof("");
+        memmove(nombre_estado, "", nom);
+      }
+    }
+    if (state_nuevo != NULL){
+      for (k = 0; k < estados; k++){
+        /*Comprobamos nombre de los estados*/
+        if (strcmp(get_nombre_estado(state_nuevo), get_nombre_estado(estados_nuevos[k])) == 0){
+          ya = 1;
+        }
+      }
+      if (ya == 0){
+        /*Aqui añadimos codificacion*/
+        estados ++;
+        estados_nuevos = realloc(estados_nuevos, estados*sizeof(estado*)); /*ya no es char*/
+        estados_nuevos[estados-1] = (estado*)malloc(sizeof(state_nuevo));
+        estados_nuevos[estados-1] = state_nuevo;
+        printf("\n%s\n", get_nombre_estado(estados_nuevos[estados-1]));
+      }
+    }
+    ya = 0;
+    creado = 0;
+  }
+  /*ESTOP SE BORRA*/
+  for (k = 0; k < estados; k++){
+    for(i = 0; i < num_estados; i++){
+      for(j = 0; j < num_simbolos; j++){
+        printf("%d ", get_transiciones(estados_nuevos[k])[j][i]);
+      }
+      printf("\n");
+    }
+    printf("\n");
+  }
+}
+
+void aniadir_trasicion(estado* state_nuevo, AFND* afnd, int estado, int num_estados, int num_simbolos){
+  int i, j;
+  for(i = 0; i < num_estados; i++){
+    for(j = 0; j < num_simbolos; j++){
+      if (AFNDTransicionIndicesEstadoiSimboloEstadof(afnd, estado, j, i)){
+        set_transiciones_sim_est(state_nuevo, j, i);
+      }
     }
   }
 }

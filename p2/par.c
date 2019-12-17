@@ -59,7 +59,6 @@ void set_equivalente(par* par_nuevo, int i){
   if ((i != 0 && i != 1) ||!par_nuevo){
     return;
   }
-  printf("%d\n", i);
   par_nuevo->equivalente = i;
 }
 
@@ -69,14 +68,11 @@ int get_equivalente(par* par_nuevo){
 }
 
 int get_id1(par* par_nuevo){
-  printf("\ndsfsaf\n");
-  printf("\nid1:%d \n", par_nuevo->id1);
   if (!par_nuevo) return -1;
   return par_nuevo->id1;
 }
 
 int get_id2(par* par_nuevo){
-  printf("\nid2:%d \n", par_nuevo->id2);
   if (!par_nuevo) return -1;
   return par_nuevo->id2;
 }

@@ -5,7 +5,7 @@ struct _estru{
   int** matriz;
   par** pares;
   int num_pares;
-  int num_accesibles; /*tam matriz+1*/
+  int num_accesibles;
 };
 
 estru* ini_estru(int num_accesibles){
@@ -52,7 +52,6 @@ void aniadir_par(estru* estru_nueva, par* par_nuevo){
 par* buscar_par(int id1, int id2, estru* estru_nueva){
   int i;
   if (!estru_nueva || id1 < 0 || id2 < 0) return NULL;
-  printf("\n%d\n", estru_nueva->num_pares);
   for(i = 0; i < (estru_nueva->num_pares-1); i++){
     if (estru_nueva->pares[i] != NULL){
       if(id1 == get_id1(estru_nueva->pares[i]) && id2 == get_id2(estru_nueva->pares[i])){
@@ -81,7 +80,6 @@ void set_par_equivalente(estru* estru_nueva, par* par_nuevo, int equiv){
   if (!estru_nueva || !par_nuevo) return;
   for(i = 0; i < estru_nueva->num_pares; i++){
     if(estru_nueva->pares[i] == par_nuevo){
-      printf("algo pasa que no entra %d, %d, %d\n", i, get_id1(estru_nueva->pares[i]), get_id2(estru_nueva->pares[i]));
       set_equivalente(estru_nueva->pares[i], equiv);
     }
   }
