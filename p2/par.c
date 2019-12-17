@@ -56,10 +56,11 @@ void eliminar_par(par* par_nuevo){
 }
 
 void set_equivalente(par* par_nuevo, int i){
-  if (i != 0 || i != 1 ||!par_nuevo){
+  if ((i != 0 && i != 1) ||!par_nuevo){
     return;
   }
-    par_nuevo->equivalente = i;
+  printf("%d\n", i);
+  par_nuevo->equivalente = i;
 }
 
 int get_equivalente(par* par_nuevo){

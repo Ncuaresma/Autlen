@@ -13,6 +13,7 @@
 AFND * AFNDMinimiza(AFND * afd);
 int* bfs(int estado, int num_simbolos, int num_estados, int* vistos, AFND* afd);
 int* transiciones (int est, int num_estados, int num_simbolos, AFND* afd);
+void imprimir_matriz(estru* estru_nueva);
 /*int** ini_matriz(int n);*/
 estru* estados_equivalentes(AFND* afd, int* visitados, estru* estru);
 estru* equivalentes(AFND* afd, estru* estru_nueva, int estado, int pos, int* visitados);

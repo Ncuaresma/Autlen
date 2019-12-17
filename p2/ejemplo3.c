@@ -23,8 +23,8 @@ int main(int argc, char ** argv){
   AFNDInsertaTransicion(p_afnd, "A", "0", "B");
   AFNDInsertaTransicion(p_afnd, "A", "1", "F");
 
-  AFNDInsertaTransicion(p_afnd, "B", "1", "C");
   AFNDInsertaTransicion(p_afnd, "B", "0", "G");
+  AFNDInsertaTransicion(p_afnd, "B", "1", "C");
 
   AFNDInsertaTransicion(p_afnd, "C", "0", "A");
   AFNDInsertaTransicion(p_afnd, "C", "1", "C");
@@ -40,6 +40,9 @@ int main(int argc, char ** argv){
 
   AFNDInsertaTransicion(p_afnd, "G", "0", "G");
   AFNDInsertaTransicion(p_afnd, "G", "1", "E");
+
+  AFNDInsertaTransicion(p_afnd, "H", "0", "G");
+  AFNDInsertaTransicion(p_afnd, "H", "1", "C");
 
 
   AFNDADot(p_afnd);
