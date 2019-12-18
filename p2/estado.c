@@ -11,7 +11,7 @@ struct _estado{
 };
 
 estado* crear_estado(int num_simbolos, int num_estados, char* nombre, int pos, int tipo){
-  int i;
+  int i, j;
   estado* state = (estado*)malloc(sizeof(estado));
   state->num_simbolos = num_simbolos;
   state->num_estados = num_estados;
@@ -30,6 +30,9 @@ estado* crear_estado(int num_simbolos, int num_estados, char* nombre, int pos, i
 
   for (i = 0; i < num_simbolos; i++){
     state->transiciones[i] = (int*)malloc(num_estados*sizeof(int));
+    for(j = 0; j < num_estados; j++){
+      state->transiciones[i][j] = 0;
+    }
   }
   return state;
 }

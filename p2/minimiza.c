@@ -336,9 +336,9 @@ AFND* nuevos_estados(estru* estru_nueva, AFND* afd, int* visitados){
   }
   /*ESTO SE BORRA --> funcionaaaaa*/
   for (k = 0; k < estados; k++){
-    for(i = 0; i < num_estados; i++){
-      for(j = 0; j < num_simbolos; j++){
-        printf("%d ", get_transiciones(estados_nuevos[k])[j][i]);
+    for(i = 0; i < num_simbolos ; i++){
+      for(j = 0; j < num_estados; j++){
+        printf("%d ", get_transiciones(estados_nuevos[k])[i][j]);
       }
       printf("\n");
     }
@@ -375,11 +375,11 @@ AFND* automata_fin(AFND* afnd, estado** estados_nuevos, int estados){
       for (k = 0; k < num_simbolos; k++){
         mismo = 0;
         for (l = 0; l < estados_totales; l++){
-          if (get_transiciones(estados_nuevos[i])[k][l] == get_codificacion_mia(estados_nuevos[j])[l]){
-            mismo ++;
+          if (mismo == 0 && get_transiciones(estados_nuevos[i])[k][l] == 1 && get_codificacion_mia(estados_nuevos[j])[l] == 1){
+            mismo = 1;
           }
         }
-        if (mismo == estados_totales){
+        if (mismo == 1){
           AFNDInsertaTransicion(p_afnd_min, get_nombre_estado(estados_nuevos[i]), AFNDSimboloEn(p_afnd_min,k), get_nombre_estado(estados_nuevos[j]));
         }
       }
