@@ -50,7 +50,7 @@ void eliminar_par(par* par_nuevo){
   int i;
   if (!par_nuevo || par_nuevo->asociados == NULL) return;
   for (i = 0; i < par_nuevo->n_asoc; i++){
-    free(par_nuevo->asociados[i]);
+    eliminar_par(par_nuevo->asociados[i]);
   }
   free(par_nuevo->asociados);
   free(par_nuevo);

@@ -21,9 +21,7 @@ AFND * AFNDMinimiza(AFND* afd){
   }
   /*Buscamos los estados que necesitamos para el AFD mediante busqueda en anchura*/
   vistos = bfs(estado_ini, num_simbolos, num_estados, vistos, afd);
-  printf("\n\nVistos\n");
   for (i = 0; i < num_estados; i++){
-    printf("%d ", vistos[i]);
     if (vistos[i] == 1){
       num_accesibles++;
       visitados = realloc(visitados, num_accesibles*sizeof(int));
@@ -34,6 +32,7 @@ AFND * AFNDMinimiza(AFND* afd){
   for (i = 0; i < num_accesibles; i++){
     printf("%d ", visitados[i]);
   }
+  printf("\n");
 
   /*Inicializamos la lista de estados, la matriz con todos los valores a cero (solo con estados accesibles)*/
   estru_nueva = ini_estru(num_accesibles);
@@ -41,12 +40,9 @@ AFND * AFNDMinimiza(AFND* afd){
   /*Cargamos la matriz con el algoritmo propuesto en clase*/
   estru_nueva = estados_equivalentes(afd, visitados, estru_nueva);
 
-  /*imprimir_matriz(estru_nueva);*/
-
+  /*Crear el afd*/
   /*recorrer la matriz para sacar los estados equivalentes*/
   p_afnd_min = nuevos_estados(estru_nueva,afd, visitados);
-  /*Crear el afd*/
-  /*p_afnd_min = crear_automata(estru_nueva, afd);*/
 
   /*Liberamos memoria final*/
   free(vistos);
@@ -92,71 +88,6 @@ int* transiciones (int est, int num_estados, int num_simbolos, AFND* afd){
   return transiciones;
 }
 
-/* Marca los estados no equivalentes en la matriz
-int** estados_equivalentes(AFND* afd, int* visitados, estru* estru){
-  int* finales = NULL;
-  int i, estado;
-  int num_simbolos = AFNDNumSimbolos(afd);
-
-  printf("Estados finaless\n");
-  for (i = 0; i < n; i++){
-    estado = visitados[i];
-    if (AFNDTipoEstadoEn(afd, estado) == FINAL || AFNDTipoEstadoEn(afd, estado) == INICIAL_Y_FINAL){
-      estados_fin ++;
-      finales = realloc(finales, estados_fin*sizeof(int));
-      finales[estados_fin-1] = estado;
-    }
-  }
-  Distinguimos los estados finales
-  matriz = marcar_finales(visitados, matriz, finales, n-1, estados_fin);
-
-  Busqueda de equivalentes por transiciones
-  matriz = marcar(afd, visitados, estru, n);
-
-  free(finales);
-  return matriz;
-}*/
-
-/* Marcamos como distinguibles todas las relaciones con el final */
-int** marcar_finales(int* visitados, int** matriz, int* finales, int tam_matriz, int estados_fin){
-  int i, j, indice;
-  for (i = 0; i < estados_fin; i++){
-    indice = finales[i];
-    for (j = 0; j <= tam_matriz; j ++){
-      if (indice < j ){
-        matriz[j-1][indice] = 1;
-        printf("ponemos un 1 en j=%d  en indice=%d\n", j, indice);
-      }
-      else if (j < indice){
-        matriz[indice-1][j] = 1;
-        printf("ponemos un 1 en indice=%d  en j=%d\n",indice, j);
-      }
-    }
-  }
-
-  for (i = 0; i < tam_matriz; i++){
-    printf("\n");
-    for (j = 0; j < tam_matriz; j++){
-      printf("%d", matriz[i][j]);
-    }
-  }
-  printf("\n");
-
-  return matriz;
-}
-
-void imprimir_matriz(estru* estru_nueva){
-  int i, j;
-  int tam_matriz = get_num_accesibles(estru_nueva);
-  for (i = 0; i < tam_matriz; i++){
-    printf("\n");
-    for (j = 0; j < tam_matriz; j++){
-      printf("%d", get_matriz(estru_nueva)[i][j]);
-    }
-  }
-  printf("\n");
-}
-
 /*Marca el resto de estados distinguiendo en clases -- recursiva*/
 estru* estados_equivalentes(AFND* afd, int* visitados, estru* estru_nueva){
   int i;
@@ -171,6 +102,7 @@ estru* estados_equivalentes(AFND* afd, int* visitados, estru* estru_nueva){
   return estru_nueva;
 }
 
+/*Para cada estado comprobamos con que estados se combinan para crear los pares y si es equivalente con ellos*/
 estru* equivalentes(AFND* afd, estru* estru_nueva, int estado, int pos, int* visitados){
   int i, simbol, k;
   int estado1;
@@ -224,7 +156,6 @@ estru* equivalentes(AFND* afd, estru* estru_nueva, int estado, int pos, int* vis
 
 
 void pares_asociados(estru* estru_nueva, par* par_nuevo, int estado1, int estado2, int pos, int i, int* visitados){
-  /*int num_accesibles = get_num_accesibles(estru);*/
   par* par_asoc;
 
   if (!estru_nueva || !par_nuevo || !visitados) return;
@@ -252,9 +183,10 @@ void pares_asociados(estru* estru_nueva, par* par_nuevo, int estado1, int estado
     aniadir_par(estru_nueva, par_asoc);
     aniadir_par_asociado(estru_nueva, par_asoc, par_nuevo);
   }
-  /*eliminar_par(par_asoc);*/
 }
 
+/***Recursiva***/
+/*Marcamos si no son equivalentes los pares, tanto en la matriz como en la estructura*/
 void marcar(par* par_nuevo, estru* estru_nueva, int pos1, int pos2, int* visitados){
   int i,j, id1, id2, pos1_asoc, pos2_asoc;
   int num_accesibles = get_num_accesibles(estru_nueva);
@@ -281,6 +213,7 @@ void marcar(par* par_nuevo, estru* estru_nueva, int pos1, int pos2, int* visitad
   }
 }
 
+/*Crea los nuevos estados combinados si son equivalentes y añade por cada estado que se combina la transicion al siguinete estado*/
 AFND* nuevos_estados(estru* estru_nueva, AFND* afd, int* visitados){
   int i, j, k;
   int nom;
@@ -327,25 +260,15 @@ AFND* nuevos_estados(estru* estru_nueva, AFND* afd, int* visitados){
         estados ++;
         estados_nuevos = realloc(estados_nuevos, estados*sizeof(estado*));
         estados_nuevos[estados-1] = state_nuevo;
-        printf("\n%s\n", get_nombre_estado(estados_nuevos[estados-1]));
       }
     }
     ya = 0;
     creado = 0;
   }
-  /*ESTO SE BORRA --> funcionaaaaa*/
-  for (k = 0; k < estados; k++){
-    for(i = 0; i < num_simbolos ; i++){
-      for(j = 0; j < num_estados; j++){
-        printf("%d ", get_transiciones(estados_nuevos[k])[i][j]);
-      }
-      printf("\n");
-    }
-    printf("\n");
-  }
   return automata_fin(afd,estados_nuevos, estados);
 }
 
+/*añade las transiciones entre estados*/
 void aniadir_trasicion(estado* state_nuevo, AFND* afnd, int estado, int num_estados, int num_simbolos){
   int i, j;
   for(i = 0; i < num_estados; i++){
@@ -357,6 +280,7 @@ void aniadir_trasicion(estado* state_nuevo, AFND* afnd, int estado, int num_esta
   }
 }
 
+/*Crea el automata final*/
 AFND* automata_fin(AFND* afnd, estado** estados_nuevos, int estados){
   int i, j, k, l;
   int mismo = 0;
@@ -389,7 +313,5 @@ AFND* automata_fin(AFND* afnd, estado** estados_nuevos, int estados){
      eliminar_estado(estados_nuevos[i]);
    }
   free(estados_nuevos);
-  /*eliminar_estado(state_nuevo);
-  free(state_nuevo);*/
   return p_afnd_min;
 }
