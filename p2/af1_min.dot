@@ -1,0 +1,10 @@
+digraph af1_min  { rankdir=LR;
+	_invisible [style="invis"];
+	CD [penwidth="2"];
+	E;
+	_invisible -> CD ;
+	CD -> CD [label="0"];
+	CD -> E [label="1"];
+	E -> CD [label="0"];
+	E -> E [label="1"];
+}

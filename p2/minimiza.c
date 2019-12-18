@@ -325,8 +325,7 @@ AFND* nuevos_estados(estru* estru_nueva, AFND* afd, int* visitados){
       if (ya == 0){
         /*Aqui añadimos codificacion*/
         estados ++;
-        estados_nuevos = realloc(estados_nuevos, estados*sizeof(estado*)); /*ya no es char*/
-        estados_nuevos[estados-1] = (estado*)malloc(sizeof(state_nuevo));
+        estados_nuevos = realloc(estados_nuevos, estados*sizeof(estado*));
         estados_nuevos[estados-1] = state_nuevo;
         printf("\n%s\n", get_nombre_estado(estados_nuevos[estados-1]));
       }
@@ -385,5 +384,12 @@ AFND* automata_fin(AFND* afnd, estado** estados_nuevos, int estados){
       }
     }
   }
+
+  for(i = 0; i < estados; i++){
+     eliminar_estado(estados_nuevos[i]);
+   }
+  free(estados_nuevos);
+  /*eliminar_estado(state_nuevo);
+  free(state_nuevo);*/
   return p_afnd_min;
 }

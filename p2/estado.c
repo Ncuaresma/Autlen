@@ -68,3 +68,14 @@ int get_tipo_estado(estado* state){
 int* get_codificacion_mia(estado* state){
   return state->codificacion_mia;
 }
+
+void eliminar_estado(estado* state){
+  int i;
+  int num_simbolos = state->num_simbolos;
+  free(state->codificacion_mia);
+  for (i = 0; i < num_simbolos; i++){
+    free(state->transiciones[i]);
+  }
+  free(state->transiciones);
+  free(state);
+}

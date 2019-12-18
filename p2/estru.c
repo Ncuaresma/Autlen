@@ -39,6 +39,7 @@ void eliminar_estru(estru* estru_nueva){
     free(estru_nueva->pares[i]);
   }
   free(estru_nueva->pares);
+  free(estru_nueva);
 }
 
 /* añade un nuevo par a la lista de pares*/

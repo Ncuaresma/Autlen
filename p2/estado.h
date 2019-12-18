@@ -21,5 +21,5 @@ void set_transiciones_sim_est(estado* state, int sim, int est);
 int** get_transiciones(estado* state);
 int get_tipo_estado(estado* state);
 int* get_codificacion_mia(estado* state);
-
+void  eliminar_estado(estado* state);
 #endif

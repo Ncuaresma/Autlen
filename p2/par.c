@@ -53,6 +53,7 @@ void eliminar_par(par* par_nuevo){
     free(par_nuevo->asociados[i]);
   }
   free(par_nuevo->asociados);
+  free(par_nuevo);
 }
 
 void set_equivalente(par* par_nuevo, int i){
