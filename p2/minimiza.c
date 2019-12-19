@@ -19,7 +19,7 @@ AFND * AFNDMinimiza(AFND* afd){
   for (i = 0; i < num_estados; i++){
     vistos[i] = 0;
   }
-  /*Buscamos los estados que necesitamos para el AFD mediante busqueda en anchura*/
+  /*Buscamos los estados que sean accesibles para el AFD mediante busqueda en anchura*/
   vistos = bfs(estado_ini, num_simbolos, num_estados, vistos, afd);
   for (i = 0; i < num_estados; i++){
     if (vistos[i] == 1){
@@ -119,16 +119,12 @@ estru* equivalentes(AFND* afd, estru* estru_nueva, int estado, int pos, int* vis
       aniadir_par(estru_nueva, par_nuevo);
     }
     /*Comprobamos si alguno de los dos es final y el otro no*/
-    if(AFNDTipoEstadoEn(afd, estado) == FINAL || AFNDTipoEstadoEn(afd, estado) == INICIAL_Y_FINAL){
-      if (AFNDTipoEstadoEn(afd, visitados[i]) != FINAL && AFNDTipoEstadoEn(afd, visitados[i]) != INICIAL_Y_FINAL){
+    if((AFNDTipoEstadoEn(afd, estado) == FINAL || AFNDTipoEstadoEn(afd, estado) == INICIAL_Y_FINAL) && (AFNDTipoEstadoEn(afd, visitados[i]) != FINAL && AFNDTipoEstadoEn(afd, visitados[i]) != INICIAL_Y_FINAL)){
           marcar(par_nuevo, estru_nueva, pos, i, visitados);
-      }
     }
-    else if(AFNDTipoEstadoEn(afd, visitados[i]) == FINAL || AFNDTipoEstadoEn(afd, visitados[i]) == INICIAL_Y_FINAL){
-      if (AFNDTipoEstadoEn(afd, estado) != FINAL && AFNDTipoEstadoEn(afd, estado) != INICIAL_Y_FINAL){
+    else if((AFNDTipoEstadoEn(afd, visitados[i]) == FINAL || AFNDTipoEstadoEn(afd, visitados[i]) == INICIAL_Y_FINAL)&&(AFNDTipoEstadoEn(afd, estado) != FINAL && AFNDTipoEstadoEn(afd, estado) != INICIAL_Y_FINAL)){
           marcar(par_nuevo, estru_nueva, pos, i, visitados);
-      }
-    }else{
+    } else{
       /*si no lo he marcado compruebo sus transiciones*/
       /* Con cada simbolo a que estado voy*/
       for(simbol = 0; simbol < num_simbolos; simbol++){
