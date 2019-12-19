@@ -11,7 +11,6 @@ AFND * AFNDTransforma(AFND * afnd){
   estado** estados_afd;
   AFND * afd;
   int i;
-  int tam;
   if(!afnd){
     printf("No hay autómata.\n");
     return NULL;
@@ -42,13 +41,6 @@ AFND * AFNDTransforma(AFND * afnd){
   /*Crear un un automata nuevo determinista*/
   afd = actualizar_afnd(afnd, estru, estados_afd);
   /*Devuelvo esto para probar lo de imprimir matriz, luego habra que devolver el afnd resultante*/
-
-  tam = (int)sizeof(estados_afd);
-  tam = tam - 1;
-  for (i = 0; i < tam; i++){
-    eliminar_estado(estados_afd[i]);
-  }
-  free(estados_afd);
   eliminar_estructura(estru);
   return afd;
 }
@@ -252,7 +244,7 @@ void estado_matriz(AFND * afnd, estructura* estru, int n_estado){
   trans = get_transciones(est);
   for (i = 0; i < num_simbolos; i++){
     /*Creamos el nombre para ese estado para ver si existe*/
-    nombre = "";
+    memset(nombre, 0, 0);
     nombre = obtener_nombre(afnd, trans[i], num_estados_base);
     if(nombre != NULL){
       if(!estado_existente(nombre, estru)){
