@@ -1,2 +1,0 @@
-dot af1.dot -o images/ejemplo_AFD.png -Tpng
-dot af1_min.dot -o images/ejemplo_AFD_min.png -Tpng
